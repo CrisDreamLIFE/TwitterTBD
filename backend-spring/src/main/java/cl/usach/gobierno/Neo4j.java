@@ -8,6 +8,11 @@ import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Transaction;
 import org.neo4j.driver.v1.TransactionWork;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.neo4j.driver.v1.Values.parameters;
 
 
@@ -30,4 +35,13 @@ public class Neo4j {
         String query = "CREATE (a:Political" + "{" + "nombre:" + "'" + name + "'" + "," + "cargo:" + "'" + cargo + "'" + "})";
         session.run(query);
     }
+
+    public void CreateRelPolitical(String name1, String name2)
+    {
+        String query = "MATCH (a:Political),(b:Political) WHERE a.nombre = '"+ name1 +"' AND b.nombre = '"+name2+"' CREATE (a)-[r:Tweet {test: 'ewfw'}]->(b)";
+        session.run(query);
+    }
+
+
+
 }

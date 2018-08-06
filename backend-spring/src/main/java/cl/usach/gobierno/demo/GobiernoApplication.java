@@ -19,7 +19,8 @@ public class GobiernoApplication {
 		SpringApplication.run(GobiernoApplication.class, args);
 		Neo4j grafo = new Neo4j();
 		grafo.OpenNeo4jClient();
-		grafo.CreateNodePolitical("Sebastian Piñera", "Presidente de la Republica");
+		grafo.CreateNodePolitical("Sebastian Pinera", "Presidente de la Republica");
+		grafo.CreateNodePolitical("Andres Chadwick", "Ministerio del Interior y Seguridad Pública");
 		grafo.CloseNeo4jClient();
 	}
 }
