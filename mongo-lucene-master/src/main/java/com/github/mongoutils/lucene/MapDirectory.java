@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.lucene.store.*;
+import org.apache.lucene.store.BaseDirectory;
 import org.apache.lucene.util.Accountable;
 
 public class MapDirectory extends BaseDirectory implements Accountable {
@@ -33,7 +34,7 @@ public class MapDirectory extends BaseDirectory implements Accountable {
         return store;
     }*/
 
-    @Override
+
     public String getLockID() {
         return "lucene-" + Integer.toHexString(hashCode());
     }
@@ -50,7 +51,6 @@ public class MapDirectory extends BaseDirectory implements Accountable {
         return files;
     }
 
-    @Override
     public boolean fileExists(final String name) throws IOException {
         ensureOpen();
         return store.containsKey(name);

@@ -1,30 +1,40 @@
-# mongo-lucene
-
-MongoDB-backed lucene directory for a scalable real-time search.
-
-## License
-
-Apache 2.0 License (http://www.apache.org/licenses/LICENSE-2.0)
-
-## Requirements / Dependencies
-
-* Java 1.7+ (http://www.java.com/de/download/)
-* Apache Lucene 4.9.0+ (http://lucene.apache.org)
-* MongoDB Java-Driver 2.12.2+ (https://github.com/mongodb/)
-
-## How to get it
-
 The maven dependecy:
 
+pom.xml
 ```xml
 <dependency>
     <groupId>com.github.mongoutils</groupId>
     <artifactId>mongo-lucene</artifactId>
     <version>1.0</version>
 </dependency>
+<dependency>
+    <groupId>org.apache.lucene</groupId>
+    <artifactId>lucene-core</artifactId>
+    <version>7.4.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.lucene</groupId>
+    <artifactId>lucene-analyzers-common</artifactId>
+    <version>7.4.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.lucene</groupId>
+    <artifactId>lucene-queryparser</artifactId>
+    <version>7.4.0</version>
+</dependency>
+<dependency>
+	<groupId>org.mongodb</groupId>
+	<artifactId>mongo-java-driver</artifactId>
+	<version>3.8.0</version>
+</dependency>
 ```
+Agregadas otras necesarias para lucene y mongo db
 
 ## How to use it
+
+Porciones de codigo necesarias para usar:
+
+Conección a mongo:
 
 ```java
 // Mongo connection
@@ -32,16 +42,21 @@ Mongo mongo = new Mongo("localhost", options);
 DB db = mongo.getDB("testdb");
 DBCollection dbCollection = db.getCollection("testcollection");
 
+
+Serializar y optencion del mapa de la BD, necesarios para indexar y hacer la busqueda
+
 // serializers + map-store
 DBObjectSerializer<String> keySerializer = new SimpleFieldDBObjectSerializer<String>("key");
 DBObjectSerializer<MapDirectoryEntry> valueSerializer = new MapDirectoryEntrySerializer("value");
 ConcurrentMap<String, MapDirectoryEntry> store = new MongoConcurrentMap<String, MapDirectoryEntry>(dbCollection, keySerializer, valueSerializer);
 
+
 // lucene directory
 Directory dir = new MapDirectory(store);
 
+Para indexar:
 // index files
-StandardAnalyzer analyser = new StandardAnalyzer(Version.LUCENE_4_9);
+StandardAnalyzer analyser = new StandardAnalyzer();
 IndexWriter writer = new IndexWriter(dir, ...);
 Document doc = new Document();
 doc.add(new TextField("title", "My file's content ...", Field.Store.YES));
@@ -50,6 +65,7 @@ writer.close();
 
 ...
 
+Para buscar en el indice:
 // search index
 Query q = new QueryParser(Version.LUCENE_4_9, "title", analyser).parse("My*content");
 IndexReader reader = IndexReader.open(dir);
@@ -59,19 +75,10 @@ TopScoreDocCollector collector = TopScoreDocCollector.create(10, true);
 
 ## Test it using mongodb-vm
 
-The project comes with a fully functional VM with an mongodb installation for testing purpose.
-You need to have VirtualBox (https://www.virtualbox.org/) and Vagrant (http://vagrantup.com/) installed to run the VM.
-All necessary ports are forwarded to the VM so you can connect to mongodb as it were installed on your system directly.
 
-Check the project out, open a console in that directory and type:
-
+El projecto viene con vagrant y VM para crear una mongodb y hacer pruebas.
+En el directorio del proyecto, abrir la terminal y ejecutar:
 ```text
 cd mongovm
 vagrant up
 ```
-
-Integration tests are done with https://github.com/joelittlejohn/embedmongo-maven-plugin.
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rstiller/mongo-lucene/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

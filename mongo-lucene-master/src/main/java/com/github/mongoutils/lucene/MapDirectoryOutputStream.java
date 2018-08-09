@@ -28,6 +28,7 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
                                     final String name,
                                     final ConcurrentMap<String, MapDirectoryEntry> map,
                                     final int bufferSize) {
+    	super(name, name);
         file = f;
         this.name = name;
         this.map = map;
@@ -147,7 +148,6 @@ public class MapDirectoryOutputStream extends IndexOutput implements Accountable
         }
     }
 
-    @Override
     public void flush() throws IOException {
         file.setLastModified(System.currentTimeMillis());
         setFileLength();
