@@ -45,10 +45,10 @@ import javax.print.Doc;
 public class Lucene {
     public PoliticalRepository politicalrepository;
     //private List<String> idList = null;
-    private List<Tweet> resultList = null;
-    private int positiveResult=0;
-    private int negativeResult=0;
-    private int neutralResult=0;
+    private ArrayList<Integer> resultList;
+    private int positiveResult;
+    private int negativeResult;
+    private int neutralResult;
     private int commentsCountry=0;
     private List<String> countryList = null;
 
@@ -72,16 +72,9 @@ public class Lucene {
             while (cursor.hasNext()) {
                 DBObject cur = cursor.next();
                 doc = new Document();
-			      //Political political = new Political();
-			      //political.setNombre("piñera");
-			      //political.setComentariosPositivos(0.0);
-			      //political.setComentariosNegativos(0.0);
-			      //political.setComentariosNeutros(0.0);
-			      //political.setDescripcion(" ");
-			      //PoliticalRepository.save(political);
                 System.out.println("------------------------");
-			      System.out.println("Guardado\n");
-                  doc.add(new StringField("id",cur.get("_id").toString(),Field.Store.YES));
+                System.out.println("Guardado\n");
+                doc.add(new StringField("id",cur.get("_id").toString(),Field.Store.YES));
                 doc.add(new TextField("text", cur.get("text").toString(),Field.Store.YES));
                 doc.add(new StringField("analysis",cur.get("analysis").toString(),Field.Store.YES));
                 //doc.add(new StringField("finalCountry",cur.get("finalCountry").toString(),Field.Store.YES));
@@ -110,6 +103,7 @@ public class Lucene {
         }
 
     }
+
     public void indexSearch(String Politicals)
     {
         try{
@@ -131,17 +125,6 @@ public class Lucene {
 
 
                 //System.out.println("pais del comentario indexando :"+ doc.get("finalCountry"));
-                if((doc.get("analysis")).equals("Positive")){
-                    //this.countryList.add(doc.get("finalCountry"));
-                    //System.out.println(doc.get("finalCountry")+"\n");
-                    this.positiveResult++;
-                }
-                else if((doc.get("analysis")).equals("Negative")){
-                    this.negativeResult++;
-                }
-                else if((doc.get("analysis")).equals("Neutral")){
-                    this.neutralResult++;
-                }
                 //System.out.println((i+1) + ".- score="+hits[i].score+" doc="+hits[i].doc+" id="+doc.get("id")+ "twee="+doc.get("text"));
             }
 
@@ -156,6 +139,7 @@ public class Lucene {
         //return 0;
     }
 
+
 	/*public void countryCommentsCount(String artista, String country){
 		int comments= this.countryList.size();
 		this.commentsCountry=0;
@@ -166,30 +150,42 @@ public class Lucene {
 		}
 	}*/
 
-    public List<Tweet> getTweets(String Political)
+    public ArrayList<Integer> getTweets(String Political)
     {
-        this.resultList = null ;
+        resultList = null ;
+        positiveResult = 0;
+        negativeResult = 0;
+        neutralResult = 0;
         try{
             IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("indice/")));
             IndexSearcher searcher = new IndexSearcher(reader);
             Analyzer analyzer = new StandardAnalyzer();
-            this.resultList = new ArrayList<Tweet>();
+            this.resultList = new ArrayList<>();
             QueryParser parser = new QueryParser("text",analyzer);
             Query query = parser.parse(Political);
 
             TopDocs result = searcher.search(query,25000);
             ScoreDoc[] hits =result.scoreDocs;
 
-            for (int i=0; i<hits.length;i++)
-            {
+            for (int i=0; i < hits.length; i++) {
                 Document doc = searcher.doc(hits[i].doc);
-                Tweet tweet = new Tweet();
+
+                if((doc.get("analysis")).equals("Positive"))
+                    positiveResult++;
+                else if((doc.get("analysis")).equals("Negative"))
+                    negativeResult++;
+                else if((doc.get("analysis")).equals("Neutral"))
+                    neutralResult++;
+
+                /*
                 tweet.setUserName(doc.get("userName"));
                 tweet.setText(doc.get("text"));
                 tweet.setFollowers(Integer.parseInt(doc.get("userFollowersCount")));
                 tweet.setFollowees(Integer.parseInt(doc.get("favoriteCount")));
+                System.out.println(tweet.getFollowers());
                 this.resultList.add(tweet);
                 tweet = null;
+                */
             }
             reader.close();
         }
@@ -198,11 +194,17 @@ public class Lucene {
             Logger.getLogger(Lucene.class.getName()).log(Level.SEVERE,null,ex);
 
         }
-        return this.resultList;
+        resultList.add(positiveResult);
+        resultList.add(negativeResult);
+        resultList.add(neutralResult);
+
+        return resultList;
     }
 
-    public List<Tweet> getResultList(){
-        return this.resultList;
+
+
+    public ArrayList<Integer> getResultList(){
+        return resultList;
     }
     public int getpositiveResult(){
         return this.positiveResult;

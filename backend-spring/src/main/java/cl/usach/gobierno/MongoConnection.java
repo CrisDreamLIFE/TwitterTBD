@@ -78,12 +78,9 @@ public class MongoConnection {
     }
   */
     public DBCursor getTweets(){
-        System.out.println("2222222");
-
         DB mongoDatabase = mongoClient.getDB(database2);
         collection = mongoDatabase.getCollection(collection2);
         DBCursor cursor = collection.find();
-        System.out.println("lei los tweets");
         return cursor;
     }
 

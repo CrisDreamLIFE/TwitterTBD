@@ -83,6 +83,7 @@ public class politicalController {
     @RequestMapping(value = "/total", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getTotal() {
+
         MongoConnection mongo = MongoConnection.getMongo();
         mongo.OpenMongoClient();
         MongoCollection collection = mongo.getCollection();
