@@ -1,5 +1,8 @@
 package cl.usach.gobierno;
 
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.MongoClient;
@@ -10,8 +13,10 @@ public class MongoConnection {
     private static volatile MongoConnection instance;
     private static MongoClient mongoClient;
     private static int port = 27017;
-    private String database = "twitter";
-    private String collection = "tweets";
+    private String database2 = "twitter2";
+    private String collection2 = "tweet";
+    private DBCollection collection;
+    private DB database;
     private MongoConnection(){}
 
 
@@ -33,8 +38,8 @@ public class MongoConnection {
 
     public MongoCollection<Document> getCollection(){
 
-        MongoDatabase mongoDatabase = mongoClient.getDatabase(database);
-        return mongoDatabase.getCollection(collection);
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(database2);
+        return mongoDatabase.getCollection(collection2);
     }
 
     public void closeMongoClient(){
@@ -71,10 +76,15 @@ public class MongoConnection {
         }
         return result;
     }
+  */
     public DBCursor getTweets(){
-        DBCursor cursor = this.collection.find();
+        System.out.println("2222222");
+
+        DB mongoDatabase = mongoClient.getDB(database2);
+        collection = mongoDatabase.getCollection(collection2);
+        DBCursor cursor = collection.find();
         System.out.println("lei los tweets");
         return cursor;
     }
-  */
+
 }

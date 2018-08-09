@@ -9,9 +9,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cl.usach.gobierno.entities.Political;
 import com.mongodb.Block;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -59,92 +64,45 @@ public class Lucene {
             //  DBCursor cursor = this.mongoConnection.getTweets();
             MongoConnection mongo = MongoConnection.getMongo();
             mongo.OpenMongoClient();
-            MongoCollection collection = mongo.getCollection();
-            FindIterable<Document> cursor = collection.find();
+            DBCursor cursor = mongo.getTweets();
+            Document doc = null;
+
             System.out.println("lei los tweets");
-
-
-            cursor.forEach((Block<Document>) doc -> {
-			      /*Political political = new Political();
-			      political.setNombre("piñera");
-			      political.setComentariosPositivos(0.0);
-			      political.setComentariosNegativos(0.0);
-			      political.setComentariosNeutros(0);
-			      political.setDescripcion(" ");
-			      politicalrepository.save(political);
-			      System.out.println("GUARDE LA MIERDA");*/
-                    //System.out.println(cur.get("_id").toString());
-                    //System.out.println(cur.get("text").toString());
-                    //System.out.println(cur.get("userName").toString());*/
-                    doc.add(new StringField("id",doc.get("_id").toString(),Field.Store.YES));
-                    doc.add(new TextField("text", doc.get("text").toString(),Field.Store.YES));
-                    doc.add(new StringField("analysis",doc.get("analysis").toString(),Field.Store.YES));
-                    //doc.add(new StringField("finalCountry",cur.get("finalCountry").toString(),Field.Store.YES));
-                    //doc.add(new StringField("userName",cur.get("userName").toString(),Field.Store.YES));
-                    doc.add(new StringField("userFollowersCount",doc.get("userFollowersCount").toString(),Field.Store.YES));
-                    doc.add(new StringField("favoriteCount",doc.get("favoriteCount").toString(),Field.Store.YES));
-                    //System.out.println("GUARDE LA MIERDA");
-                    //System.out.println("pais del comentario indexando :"+ cur.get("finalCountry"));
-                    if (writer.getConfig().getOpenMode() == OpenMode.CREATE){
-                        //System.out.println("Indexando el tweet: "+cur.get("text")+"\n");
-                        try {
-                            writer.addDocument(doc);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        //System.out.println(doc);
-                    }
-                    else{
-                        //System.out.println("Actualizando el tweet: "+cur.get("text")+"\n");
-                        try {
-                            writer.updateDocument(new Term("text"+doc.get("text")), doc);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        //System.out.println(doc);
-                    }
-                });
-/*
-            VERSION ANTIGUA
 
             while (cursor.hasNext()) {
                 DBObject cur = cursor.next();
                 doc = new Document();
-			      Political political = new Political();
-			      political.setNombre("piñera");
-			      political.setComentariosPositivos(0.0);
-			      political.setComentariosNegativos(0.0);
-			      political.setComentariosNeutros(0);
-			      political.setDescripcion(" ");
-			      politicalrepository.save(political);
-			      System.out.println("GUARDE LA MIERDA");
-                  System.out.println(cur.get("_id").toString());
-                  System.out.println(cur.get("text").toString());
-                  System.out.println(cur.get("userName").toString());
-                doc.add(new StringField("id",cur.get("_id").toString(),Field.Store.YES));
+			      //Political political = new Political();
+			      //political.setNombre("piñera");
+			      //political.setComentariosPositivos(0.0);
+			      //political.setComentariosNegativos(0.0);
+			      //political.setComentariosNeutros(0.0);
+			      //political.setDescripcion(" ");
+			      //PoliticalRepository.save(political);
+                System.out.println("------------------------");
+			      System.out.println("Guardado\n");
+                  doc.add(new StringField("id",cur.get("_id").toString(),Field.Store.YES));
                 doc.add(new TextField("text", cur.get("text").toString(),Field.Store.YES));
                 doc.add(new StringField("analysis",cur.get("analysis").toString(),Field.Store.YES));
-                doc.add(new StringField("finalCountry",cur.get("finalCountry").toString(),Field.Store.YES));
+                //doc.add(new StringField("finalCountry",cur.get("finalCountry").toString(),Field.Store.YES));
                 //doc.add(new StringField("userName",cur.get("userName").toString(),Field.Store.YES));
                 doc.add(new StringField("userFollowersCount",cur.get("userFollowersCount").toString(),Field.Store.YES));
                 doc.add(new StringField("favoriteCount",cur.get("favoriteCount").toString(),Field.Store.YES));
                 //System.out.println("GUARDE LA MIERDA");
-                //System.out.println("pais del comentario indexando :"+ cur.get("finalCountry"));
+                //System.out.println("pais del comentario indexando :"+ doc.get("finalCountry"));
                 if (writer.getConfig().getOpenMode() == OpenMode.CREATE){
-                    //System.out.println("Indexando el tweet: "+cur.get("text")+"\n");
+                    System.out.println("Indexando el tweet: "+doc.get("text")+"\n");
                     writer.addDocument(doc);
-                    //System.out.println(doc);
+                    System.out.println(doc);
                 }
                 else{
-                    //System.out.println("Actualizando el tweet: "+cur.get("text")+"\n");
+                    System.out.println("Actualizando el tweet: "+doc.get("text")+"\n");
                     writer.updateDocument(new Term("text"+cur.get("text")), doc);
-                    //System.out.println(doc);
+                    System.out.println(doc);
                 }
             }
             cursor.close();
             writer.close();
-            System.out.println(cur2);
-        */
         }
         catch(IOException ioe){
             System.out.println(" caught a "+ ioe.getClass() + "\n with message: " + ioe.getMessage());
