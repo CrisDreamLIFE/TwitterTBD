@@ -108,7 +108,7 @@ public class TwitterListener {
 				bolsa[16] = "José Ramón Valente Vías";
 				bolsa[17] = "Alfredo Moreno Charme";
 				bolsa[18] = "Alfredo Moreno Charme";
-				bolsa[19] = "Gerardo Varela Alfonso";
+				bolsa[19] = "María Carolina Schmidt Zaldívar";
 				bolsa[20] = "Hernán Larraín Fernández";
 				bolsa[21] = "Nicolás Monckeberg Díaz";
 				bolsa[22] = "Juan Andrés Fontaine Talavera"; 
@@ -122,7 +122,7 @@ public class TwitterListener {
 				bolsa[30] = "Marcela Cubillos Sigall";
 				bolsa[31] = "Pauline Kantor Pupkin"; 
 				bolsa[32] = "Isabel Plá Jarufe";
-				bolsa[33] = "Alejandra Pérez Lecaros"; 
+				bolsa[33] = "Mauricio José Rojas Mullor";
 				
 				
 	    FilterQuery filter = new FilterQuery();

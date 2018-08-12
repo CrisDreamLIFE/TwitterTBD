@@ -21,7 +21,7 @@ INSERT INTO political(nombre, descripcion, comentarios_negativos, comentarios_po
 	('Cecilia Pérez', 'Ministro Secretario General de Gobierno', 0.0, 0.0, 0.0),
 	('José Ramón Valente Vías', 'Ministro de Economía, Fomento y Turismo', 0.0, 0.0, 0.0),
 	('Alfredo Moreno Charme', 'Ministro de Desarrollo Social', 0.0, 0.0, 0.0),
-	('Gerardo Varela Alfonso', 'Ministro de Educación', 0.0, 0.0, 0.0),
+	('Marcela Cubillos Sigall', 'Ministro de Educación', 0.0, 0.0, 0.0),
 	('Hernán Larraín Fernández', 'Ministro de Justicia y Derechos Humanos', 0.0, 0.0, 0.0),
 	('Nicolás Monckeberg Díaz', 'Ministro del Trabajo y Previsión Social', 0.0, 0.0, 0.0),
 	('Juan Andrés Fontaine Talavera', 'Ministro de Obras Públicas', 0.0, 0.0, 0.0),
@@ -32,7 +32,7 @@ INSERT INTO political(nombre, descripcion, comentarios_negativos, comentarios_po
 	('Gloria Hutt Hesse', 'Ministra de Transportes y Telecomunicaciones', 0.0, 0.0, 0.0),
 	('Felipe Ward Edwards', 'Ministro de Bienes Nacionales', 0.0, 0.0, 0.0),
 	('Susana Jiménez Schuster', 'Ministra de Energía', 0.0, 0.0, 0.0),
-	('Marcela Cubillos Sigall', 'Ministra de Medio Ambiente', 0.0, 0.0, 0.0),
+	('María Carolina Schmidt Zaldívar', 'Ministra de Medio Ambiente', 0.0, 0.0, 0.0),
 	('Pauline Kantor Pupkin', 'Ministra del Deporte', 0.0, 0.0, 0.0),
 	('Isabel Plá Jarufe', 'Ministra de la Mujer y la Equidad de Género', 0.0, 0.0, 0.0),
-	('Alejandra Pérez Lecaros', 'Ministra de la Cultura y Las Artes', 0.0, 0.0, 0.0);
+	('Mauricio José Rojas Mullor', 'Ministro de la Cultura y Las Artes', 0.0, 0.0, 0.0);
