@@ -19,6 +19,9 @@ public class Neo4j {
     private static Driver driver;
     private static volatile Session session;
 
+    public List<Map<String, Object>> listaNodos = new ArrayList<>();
+    public List<Map<String, Object>> listaRelTweet = new ArrayList<>();
+
     public void OpenNeo4jClient(){
         driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "root"));
         session = driver.session();
@@ -45,20 +48,12 @@ public class Neo4j {
 
         conexion.close();
     }
-
-    public void CreateNodeUsuario() throws SQLException
-    {
-        Lucene luca = new Lucene();
-        ArrayList<Document> usuarios2;
-        usuarios2 = luca.indexSearch();
-
-        for (int i = 0; i < usuarios2.size(); i++) {
-            String query = "CREATE (a:Usuario" + "{" + "nombre:" + "'" + usuarios2.get(i).get("userScreenName") + "'})";
-            session.run(query);
-        }
-
-    }
-
+    /*
+        Crea relaciones entre usuarios con mas de 1000 seguidores y politicos
+        Busca en Lucene los tweets que contengan la palabra del politico y
+        si ese usuario tiene mas de 1000 seguidores entonces lo agrega a una lista
+        de usuarios que se crea un nodo en neo4j
+     */
     public void CrearRelacionTweet()
     {
         Lucene luca = new Lucene();
@@ -66,7 +61,6 @@ public class Neo4j {
         while(politicos.hasNext())
         {
             Record recordPolitico = politicos.next();
-            System.out.println(recordPolitico);
             for(int i=0;i<recordPolitico.size();i++)
             {
                 ArrayList<Document> lista = luca.politicalSearch(recordPolitico.get("a.nombre").asString());
@@ -74,21 +68,93 @@ public class Neo4j {
                     String query2 = "MERGE (a:Usuario" + "{" + "nombre:" + "'" + lista.get(j).get("userScreenName") + "'})";
                     session.run(query2);
 
-                    String tweetModified = lista.get(j).get("text").replaceAll("'", "\"");
+                    String tweetText = lista.get(j).get("text").replaceAll("'", "\"");
 
-                    String followerRank = lista.get(j).get("userFollowersCount");
+                    String followersCount = lista.get(j).get("userFollowersCount");
 
                     String query = "MATCH (a:Political),(b:Usuario) WHERE a.nombre = '" + recordPolitico.get("a.nombre").asString() + "' AND b.nombre = '" + lista.get(j).get("userScreenName") + "'" +
-                            " CREATE (a)-[r:Tweet {text: '" + tweetModified + "'" + ", followerRank:'" + followerRank + "'}]->(b)";
+                            " CREATE (a)-[r:Tweet {text: '" + tweetText + "'" + ", followersCount:'" + followersCount + "'}]->(b)";
                     session.run(query);
                 }
             }
         }
     }
 
-    public void CreateRelPolitical(String name1, String name2)
+    public void GetNodosTotal()
     {
-        String query = "MATCH (a:Political),(b:Political) WHERE a.nombre = '"+ name1 +"' AND b.nombre = '"+name2+"' CREATE (a)-[r:Tweet {test: 'ewfw'}]->(b)";
-        session.run(query);
+        int id = 0;
+        ArrayList<String> usuarios = new ArrayList<String>();
+
+        StatementResult nodes = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, r.followersCount as followersCount, a.nombre AS politico ORDER BY r.followerRank DESC LIMIT 80");
+        while(nodes.hasNext())
+        {
+            Record record = nodes.next();
+            if(!usuarios.contains(record.get("usuario").asString())) {
+                listaNodos.add(mapTriple("id", id, "username", record.get("usuario").asString(), "weight", Integer.parseInt(record.get("followersCount").asString())));
+                id++;
+                usuarios.add(record.get("usuario").asString());
+            }
+        }
+
+        nodes = session.run("MATCH (a:Political) return a.nombre as politico");
+        while(nodes.hasNext())
+        {
+            Record record = nodes.next();
+            listaNodos.add(mapTriple("id", id,"username", record.get("politico").asString() ,"weight", 10));
+            id++;
+        }
     }
+
+    public void GetRelNodos()
+    {
+        int userIndex = -1;
+        int politicalIndex = -1;
+        StatementResult rel = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, r.followersCount as followersCount, a.nombre AS politico ORDER BY r.followerRank DESC LIMIT 80");
+        while(rel.hasNext())
+        {
+            Record record = rel.next();
+            for(int i = 0; i< listaNodos.size(); i++)
+            {
+                if(listaNodos.get(i).get("username").equals(record.get("usuario").asString()))
+                {
+                    userIndex = Integer.parseInt(listaNodos.get(i).get("id").toString());
+                    for(int j = 0; j< listaNodos.size(); j++)
+                    {
+                        if(listaNodos.get(j).get("username").equals(record.get("politico").asString()))
+                        {
+                            politicalIndex = Integer.parseInt(listaNodos.get(j).get("id").toString());
+                            break;
+                        }
+                    }
+                }
+            }
+
+            listaRelTweet.add(mapDouble("source", userIndex, "target", politicalIndex));
+        }
+    }
+
+    private Map<String, Object> mapTriple(String key1, Object value1, String key2, Object value2, String key3, Object value3)
+    {
+        Map<String, Object> result = new HashMap<String, Object>(2);
+        result.put(key1, value1);
+        result.put(key2, value2);
+        result.put(key3, value3);
+        return result;
+    }
+
+    private Map<String, Object> mapDouble(String key1, Object value1, String key2, Object value2)
+    {
+        Map<String, Object> result = new HashMap<String, Object>(2);
+        result.put(key1, value1);
+        result.put(key2, value2);
+        return result;
+    }
+
+    public Map<String, Object> getGrafo()
+    {
+        GetNodosTotal();
+        GetRelNodos();
+        return mapDouble("nodes", listaNodos, "links", listaRelTweet);
+    }
+
 }
