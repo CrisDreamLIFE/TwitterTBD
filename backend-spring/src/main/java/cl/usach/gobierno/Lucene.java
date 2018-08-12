@@ -23,11 +23,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -43,14 +39,10 @@ import cl.usach.gobierno.repositories.PoliticalRepository;
 import javax.print.Doc;
 
 public class Lucene {
-    public PoliticalRepository politicalrepository;
-    //private List<String> idList = null;
     private ArrayList<Integer> resultList;
     private int positiveResult;
     private int negativeResult;
     private int neutralResult;
-    private int commentsCountry=0;
-    private List<String> countryList = null;
 
     public void indexCreate()
     {
@@ -59,30 +51,24 @@ public class Lucene {
             Analyzer analyzer = new StandardAnalyzer();
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
             iwc.setOpenMode(OpenMode.CREATE);
-
             IndexWriter writer = new IndexWriter(dir,iwc);
-            //  DBCursor cursor = this.mongoConnection.getTweets();
             MongoConnection mongo = MongoConnection.getMongo();
             mongo.OpenMongoClient();
             DBCursor cursor = mongo.getTweets();
             Document doc = null;
 
-            System.out.println("lei los tweets");
-
             while (cursor.hasNext()) {
                 DBObject cur = cursor.next();
                 doc = new Document();
-                System.out.println("------------------------");
+                System.out.println("-----------------------------");
                 System.out.println("Guardado\n");
                 doc.add(new StringField("id",cur.get("_id").toString(),Field.Store.YES));
                 doc.add(new TextField("text", cur.get("text").toString(),Field.Store.YES));
                 doc.add(new StringField("analysis",cur.get("analysis").toString(),Field.Store.YES));
                 //doc.add(new StringField("finalCountry",cur.get("finalCountry").toString(),Field.Store.YES));
-                //doc.add(new StringField("userName",cur.get("userName").toString(),Field.Store.YES));
+                doc.add(new StringField("userScreenName",cur.get("userScreenName").toString(),Field.Store.YES));
                 doc.add(new StringField("userFollowersCount",cur.get("userFollowersCount").toString(),Field.Store.YES));
                 doc.add(new StringField("favoriteCount",cur.get("favoriteCount").toString(),Field.Store.YES));
-                //System.out.println("GUARDE LA MIERDA");
-                //System.out.println("pais del comentario indexando :"+ doc.get("finalCountry"));
                 if (writer.getConfig().getOpenMode() == OpenMode.CREATE){
                     System.out.println("Indexando el tweet: "+doc.get("text")+"\n");
                     writer.addDocument(doc);
@@ -98,59 +84,30 @@ public class Lucene {
             writer.close();
         }
         catch(IOException ioe){
-            System.out.println(" caught a "+ ioe.getClass() + "\n with message: " + ioe.getMessage());
-
+            System.out.println(" Error en "+ ioe.getClass() + "\n mensaje: " + ioe.getMessage());
         }
-
     }
 
-    public void indexSearch(String Politicals)
-    {
-        try{
+    public ArrayList<Document> indexSearch(){
+        ArrayList<Document> usuarios = new ArrayList<Document>();
+        try {
             IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("indice/")));
-            IndexSearcher searcher = new IndexSearcher(reader);
-            Analyzer analyzer = new StandardAnalyzer();
-            this.positiveResult=0;
-            this.negativeResult=0;
-            this.neutralResult=0;
-            QueryParser parser = new QueryParser("text",analyzer);
-            Query query = parser.parse(Politicals);
-            //countryList = new ArrayList<String>();
-            TopDocs result = searcher.search(query,25000);
-            ScoreDoc[] hits =result.scoreDocs;
-            //System.out.println("cantidad tweets:"+hits.length);
-            for (int i=0; i<hits.length;i++){
-                Document doc = searcher.doc(hits[i].doc);
-                //System.out.println(doc.get("userName"));
-
-
-                //System.out.println("pais del comentario indexando :"+ doc.get("finalCountry"));
-                //System.out.println((i+1) + ".- score="+hits[i].score+" doc="+hits[i].doc+" id="+doc.get("id")+ "twee="+doc.get("text"));
+            for (int i=0; i < reader.numDocs(); i++){
+                Document doc = reader.document(i);
+                if(Integer.parseInt(doc.get("userFollowersCount")) > 1000){
+                    usuarios.add(doc);
+                }
             }
-
             reader.close();
-
-
         }
-        catch(IOException | ParseException ex){
-            Logger.getLogger(Lucene.class.getName()).log(Level.SEVERE,null,ex);
-
+        catch(IOException ioe) {
+            System.out.println("Error al leer usuarios");
         }
-        //return 0;
+
+        return usuarios;
     }
 
-
-	/*public void countryCommentsCount(String artista, String country){
-		int comments= this.countryList.size();
-		this.commentsCountry=0;
-		for(int i=0;i<comments;i++){
-			if(country.equals(this.countryList.get(i))){
-				this.commentsCountry++;
-			}
-		}
-	}*/
-
-    public ArrayList<Integer> getTweets(String Political)
+    public ArrayList<Integer> getAnalysis(String Political)
     {
         resultList = null ;
         positiveResult = 0;
@@ -163,7 +120,6 @@ public class Lucene {
             this.resultList = new ArrayList<>();
             QueryParser parser = new QueryParser("text",analyzer);
             Query query = parser.parse(Political);
-
             TopDocs result = searcher.search(query,25000);
             ScoreDoc[] hits =result.scoreDocs;
 
@@ -176,16 +132,6 @@ public class Lucene {
                     negativeResult++;
                 else if((doc.get("analysis")).equals("Neutral"))
                     neutralResult++;
-
-                /*
-                tweet.setUserName(doc.get("userName"));
-                tweet.setText(doc.get("text"));
-                tweet.setFollowers(Integer.parseInt(doc.get("userFollowersCount")));
-                tweet.setFollowees(Integer.parseInt(doc.get("favoriteCount")));
-                System.out.println(tweet.getFollowers());
-                this.resultList.add(tweet);
-                tweet = null;
-                */
             }
             reader.close();
         }
@@ -201,28 +147,18 @@ public class Lucene {
         return resultList;
     }
 
-
-
     public ArrayList<Integer> getResultList(){
         return resultList;
     }
     public int getpositiveResult(){
-        return this.positiveResult;
+        return positiveResult;
     }
     public int getnegativeResult(){
-        return this.negativeResult;
+        return negativeResult;
     }
     public int getneutralResult(){
-        return this.neutralResult;
+        return neutralResult;
     }
-    public List<String> getCountryList(){
-        return this.countryList;
-    }
-
-    public int getCommentsCountry() {
-        return commentsCountry;
-    }
-
 
     private Map<String, Object> mapDouble(String key1, Object value1, String key2, Object value2) {
         Map<String, Object> result = new HashMap<String, Object>(2);

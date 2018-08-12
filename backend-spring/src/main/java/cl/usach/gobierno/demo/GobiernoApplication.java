@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,20 +21,18 @@ import java.util.List;
 @EnableScheduling
 public class GobiernoApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		SpringApplication.run(GobiernoApplication.class, args);
-		/*
+
 		Neo4j grafo = new Neo4j();
 		grafo.OpenNeo4jClient();
-		grafo.CreateNodePolitical("Sebastian Pinera", "Presidente de la Republica");
-		grafo.CreateNodePolitical("Andres Chadwick", "Ministerio del Interior y Seguridad Pública");
+		grafo.CreateNodeUsuario();
 		grafo.CloseNeo4jClient();
-		*/
-		Lucene luca = new Lucene();
-		luca.indexCreate();
-		ArrayList<Integer> tweets = luca.getTweets("Ministro");
-		System.out.println(tweets.get(0));
-		System.out.println(tweets.get(1));
-		System.out.println(tweets.get(2));
+
+        /*
+        Lucene luca = new Lucene();
+        luca.indexCreate();
+        luca.indexSearch();
+        */
 	}
 }
