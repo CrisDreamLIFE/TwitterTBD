@@ -24,16 +24,15 @@ public class GobiernoApplication {
 	public static void main(String[] args) throws SQLException {
 		SpringApplication.run(GobiernoApplication.class, args);
 
+
+		Lucene luca = new Lucene();
+		luca.indexCreate();
+
 		Neo4j grafo = new Neo4j();
 		grafo.OpenNeo4jClient();
 		grafo.CreateNodePolitical();
 		grafo.CrearRelacionTweet();
+		grafo.DeleteNodesWithoutRel();
 		grafo.CloseNeo4jClient();
-
-        /*
-        Lucene luca = new Lucene();
-        luca.indexCreate();
-        luca.indexSearch();
-        */
 	}
 }

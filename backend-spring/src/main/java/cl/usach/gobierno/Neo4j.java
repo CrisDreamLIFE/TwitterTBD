@@ -7,10 +7,7 @@ import org.neo4j.driver.v1.Driver;
 import javax.print.Doc;
 import java.sql.*;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.neo4j.driver.v1.Values.parameters;
 
@@ -70,14 +67,22 @@ public class Neo4j {
 
                     String tweetText = lista.get(j).get("text").replaceAll("'", "\"");
 
-                    String followersCount = lista.get(j).get("userFollowersCount");
-
                     String query = "MATCH (a:Political),(b:Usuario) WHERE a.nombre = '" + recordPolitico.get("a.nombre").asString() + "' AND b.nombre = '" + lista.get(j).get("userScreenName") + "'" +
-                            " CREATE (a)-[r:Tweet {text: '" + tweetText + "'" + ", followersCount:'" + followersCount + "'}]->(b)";
+                            " MERGE (a)-[r:Tweet {text: '" + tweetText + "'}]->(b)";
                     session.run(query);
+
+                    String followersCount = lista.get(j).get("userFollowersCount");
+                    String query3 = "MATCH (a:Usuario) WHERE a.nombre = '"+ lista.get(j).get("userScreenName") +"' SET a.followersCount =  '" + followersCount + "'";
+                    session.run(query3);
+
                 }
             }
         }
+    }
+
+    public void DeleteNodesWithoutRel(){
+        String query = "MATCH (n) WHERE NOT (n)--() DELETE n";
+        session.run(query);
     }
 
     public void GetNodosTotal()
@@ -85,7 +90,7 @@ public class Neo4j {
         int id = 0;
         ArrayList<String> usuarios = new ArrayList<String>();
 
-        StatementResult nodes = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, r.followersCount as followersCount, a.nombre AS politico ORDER BY r.followerRank DESC LIMIT 80");
+        StatementResult nodes = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, u.followersCount as followersCount, a.nombre AS politico ORDER BY r.followerRank DESC LIMIT 80");
         while(nodes.hasNext())
         {
             Record record = nodes.next();
@@ -109,7 +114,7 @@ public class Neo4j {
     {
         int userIndex = -1;
         int politicalIndex = -1;
-        StatementResult rel = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, r.followersCount as followersCount, a.nombre AS politico ORDER BY r.followerRank DESC LIMIT 80");
+        StatementResult rel = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, a.nombre AS politico ORDER BY u.followerRank DESC LIMIT 80");
         while(rel.hasNext())
         {
             Record record = rel.next();
@@ -131,6 +136,19 @@ public class Neo4j {
 
             listaRelTweet.add(mapDouble("source", userIndex, "target", politicalIndex));
         }
+    }
+
+    private Map<String, Object> mapMultiple(Map<String, Object> neoValues)
+    {
+        Map<String, Object> result = new HashMap<String, Object>(2);
+
+        for(Map.Entry<String, Object> entry : neoValues.entrySet()){
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            result.put(key, value);
+        }
+
+        return result;
     }
 
     private Map<String, Object> mapTriple(String key1, Object value1, String key2, Object value2, String key3, Object value3)

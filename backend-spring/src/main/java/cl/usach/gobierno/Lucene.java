@@ -101,7 +101,7 @@ public class Lucene {
             ScoreDoc[] hits =result.scoreDocs;
             for (int i=0; i<hits.length;i++){
                 Document doc = searcher.doc(hits[i].doc);
-                if(Integer.parseInt(doc.get("userFollowersCount")) > 1000){
+                if(Integer.parseInt(doc.get("userFollowersCount")) > 2000){
                     users.add(doc);
                 }
             }
