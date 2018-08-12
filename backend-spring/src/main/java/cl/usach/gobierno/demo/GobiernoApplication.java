@@ -26,7 +26,9 @@ public class GobiernoApplication {
 
 		Neo4j grafo = new Neo4j();
 		grafo.OpenNeo4jClient();
+		grafo.CreateNodePolitical();
 		grafo.CreateNodeUsuario();
+		grafo.CrearRelacionTweet();
 		grafo.CloseNeo4jClient();
 
         /*

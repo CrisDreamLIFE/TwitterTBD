@@ -88,6 +88,31 @@ public class Lucene {
         }
     }
 
+    public ArrayList<Document> politicalSearch(String Politicals)
+    {
+        ArrayList<Document> users = new ArrayList<Document>();
+        try{
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("indice/")));
+            IndexSearcher searcher = new IndexSearcher(reader);
+            Analyzer analyzer = new StandardAnalyzer();
+            QueryParser parser = new QueryParser("text",analyzer);
+            Query query = parser.parse(Politicals);
+            TopDocs result = searcher.search(query,25000);
+            ScoreDoc[] hits =result.scoreDocs;
+            for (int i=0; i<hits.length;i++){
+                Document doc = searcher.doc(hits[i].doc);
+                if(Integer.parseInt(doc.get("userFollowersCount")) > 1000){
+                    users.add(doc);
+                }
+            }
+            reader.close();
+        }
+        catch(IOException | ParseException ex){
+            Logger.getLogger(Lucene.class.getName()).log(Level.SEVERE,null,ex);
+        }
+        return users;
+    }
+
     public ArrayList<Document> indexSearch(){
         ArrayList<Document> usuarios = new ArrayList<Document>();
         try {

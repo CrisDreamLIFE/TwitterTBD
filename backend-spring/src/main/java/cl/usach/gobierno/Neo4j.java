@@ -1,15 +1,12 @@
 package cl.usach.gobierno;
 
 import org.apache.lucene.document.Document;
-import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.*;
 import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.Transaction;
-import org.neo4j.driver.v1.TransactionWork;
 
+import javax.print.Doc;
 import java.sql.*;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,11 +53,37 @@ public class Neo4j {
         usuarios2 = luca.indexSearch();
 
         for (int i = 0; i < usuarios2.size(); i++) {
-            String query = "CREATE (a:Political" + "{" + "nombre:" + "'" + usuarios2.get(i).get("userScreenName") + "'})";
-            System.out.println(usuarios2.get(i).get("userScreenName"));
+            String query = "CREATE (a:Usuario" + "{" + "nombre:" + "'" + usuarios2.get(i).get("userScreenName") + "'})";
             session.run(query);
         }
 
+    }
+
+    public void CrearRelacionTweet()
+    {
+        Lucene luca = new Lucene();
+        StatementResult politicos = session.run("MATCH (a:Political) return a.nombre");
+        while(politicos.hasNext())
+        {
+            Record recordPolitico = politicos.next();
+            System.out.println(recordPolitico);
+            for(int i=0;i<recordPolitico.size();i++)
+            {
+                ArrayList<Document> lista = luca.politicalSearch(recordPolitico.get("a.nombre").asString());
+                for (int j = 0; j < lista.size(); j++) {
+                    String query2 = "MERGE (a:Usuario" + "{" + "nombre:" + "'" + lista.get(j).get("userScreenName") + "'})";
+                    session.run(query2);
+
+                    String tweetModified = lista.get(j).get("text").replaceAll("'", "\"");
+
+                    String followerRank = lista.get(j).get("userFollowersCount");
+
+                    String query = "MATCH (a:Political),(b:Usuario) WHERE a.nombre = '" + recordPolitico.get("a.nombre").asString() + "' AND b.nombre = '" + lista.get(j).get("userScreenName") + "'" +
+                            " CREATE (a)-[r:Tweet {text: '" + tweetModified + "'" + ", followerRank:'" + followerRank + "'}]->(b)";
+                    session.run(query);
+                }
+            }
+        }
     }
 
     public void CreateRelPolitical(String name1, String name2)
