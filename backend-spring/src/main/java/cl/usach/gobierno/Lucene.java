@@ -43,6 +43,10 @@ public class Lucene {
     private int positiveResult;
     private int negativeResult;
     private int neutralResult;
+    private ArrayList<Integer> resultListGeneral;
+    private int positiveResultGeneral;
+    private int negativeResultGeneral;
+    private int neutralResultGeneral;
 
     public void indexCreate()
     {
@@ -59,25 +63,27 @@ public class Lucene {
 
             while (cursor.hasNext()) {
                 DBObject cur = cursor.next();
-                doc = new Document();
-                System.out.println("-----------------------------");
-                System.out.println("Guardado\n");
-                doc.add(new StringField("id",cur.get("_id").toString(),Field.Store.YES));
-                doc.add(new TextField("text", cur.get("text").toString(),Field.Store.YES));
-                doc.add(new StringField("analysis",cur.get("analysis").toString(),Field.Store.YES));
-                //doc.add(new StringField("finalCountry",cur.get("finalCountry").toString(),Field.Store.YES));
-                doc.add(new StringField("userScreenName",cur.get("userScreenName").toString(),Field.Store.YES));
-                doc.add(new StringField("userFollowersCount",cur.get("userFollowersCount").toString(),Field.Store.YES));
-                doc.add(new StringField("favoriteCount",cur.get("favoriteCount").toString(),Field.Store.YES));
-                if (writer.getConfig().getOpenMode() == OpenMode.CREATE){
-                    System.out.println("Indexando el tweet: "+doc.get("text")+"\n");
-                    writer.addDocument(doc);
-                    System.out.println(doc);
-                }
-                else{
-                    System.out.println("Actualizando el tweet: "+doc.get("text")+"\n");
-                    writer.updateDocument(new Term("text"+cur.get("text")), doc);
-                    System.out.println(doc);
+                if (cur.get("retweet").toString().equals("false")) {
+                    doc = new Document();
+                    System.out.println("-----------------------------");
+                    System.out.println("Guardado\n");
+                    doc.add(new StringField("id", cur.get("_id").toString(), Field.Store.YES));
+                    doc.add(new TextField("text", cur.get("text").toString(), Field.Store.YES));
+                    doc.add(new StringField("analysis", cur.get("analysis").toString(), Field.Store.YES));
+                    //doc.add(new StringField("finalCountry",cur.get("finalCountry").toString(),Field.Store.YES));
+                    doc.add(new StringField("userScreenName", cur.get("userScreenName").toString(), Field.Store.YES));
+                    doc.add(new StringField("userFollowersCount", cur.get("userFollowersCount").toString(), Field.Store.YES));
+                    doc.add(new StringField("favoriteCount", cur.get("favoriteCount").toString(), Field.Store.YES));
+
+                    if (writer.getConfig().getOpenMode() == OpenMode.CREATE) {
+                        System.out.println("Indexando el tweet: " + doc.get("text") + "\n");
+                        writer.addDocument(doc);
+                        System.out.println(doc);
+                    } else {
+                        System.out.println("Actualizando el tweet: " + doc.get("text") + "\n");
+                        writer.updateDocument(new Term("text" + cur.get("text")), doc);
+                        System.out.println(doc);
+                    }
                 }
             }
             cursor.close();
@@ -101,7 +107,7 @@ public class Lucene {
             ScoreDoc[] hits =result.scoreDocs;
             for (int i=0; i<hits.length;i++){
                 Document doc = searcher.doc(hits[i].doc);
-                if(Integer.parseInt(doc.get("userFollowersCount")) > 2000){
+                if(Integer.parseInt(doc.get("userFollowersCount")) > 1000){
                     users.add(doc);
                 }
             }
@@ -170,6 +176,37 @@ public class Lucene {
         resultList.add(neutralResult);
 
         return resultList;
+    }
+
+    public ArrayList<Integer> getAnalysisGeneral(){
+        resultListGeneral = null ;
+        positiveResultGeneral = 0;
+        negativeResultGeneral = 0;
+        neutralResultGeneral = 0;
+        try {
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("indice/")));
+            this.resultListGeneral = new ArrayList<>();
+
+            for (int i = 0; i < reader.numDocs(); i++) {
+                Document doc = reader.document(i);
+
+                if((doc.get("analysis")).equals("Positive"))
+                    positiveResultGeneral++;
+                else if((doc.get("analysis")).equals("Negative"))
+                    negativeResultGeneral++;
+                else if((doc.get("analysis")).equals("Neutral"))
+                    neutralResultGeneral++;
+            }
+            reader.close();
+        }
+        catch(IOException ioe){
+            System.out.println("Error");
+        }
+        resultListGeneral.add(positiveResultGeneral);
+        resultListGeneral.add(negativeResultGeneral);
+        resultListGeneral.add(neutralResultGeneral);
+
+        return resultListGeneral;
     }
 
     public ArrayList<Integer> getResultList(){

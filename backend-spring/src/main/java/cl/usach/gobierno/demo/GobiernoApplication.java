@@ -18,13 +18,13 @@ import java.util.List;
 @ComponentScan({"cl.usach.gobierno", "cl.usach.gobierno.controllers"})
 @EntityScan({"cl.usach.gobierno.entities"})
 @EnableJpaRepositories("cl.usach.gobierno.repositories")
-@EnableScheduling
+//@EnableScheduling
 public class GobiernoApplication {
 
 	public static void main(String[] args) throws SQLException {
 		SpringApplication.run(GobiernoApplication.class, args);
 
-
+		/*
 		Lucene luca = new Lucene();
 		luca.indexCreate();
 
@@ -34,5 +34,6 @@ public class GobiernoApplication {
 		grafo.CrearRelacionTweet();
 		grafo.DeleteNodesWithoutRel();
 		grafo.CloseNeo4jClient();
+		*/
 	}
 }

@@ -1,5 +1,6 @@
 package cl.usach.gobierno.controllers;
 
+import cl.usach.gobierno.Lucene;
 import cl.usach.gobierno.entities.Political;
 import cl.usach.gobierno.repositories.PoliticalRepository;
 import com.mongodb.Block;
@@ -13,6 +14,7 @@ import cl.usach.gobierno.MongoConnection;
 import org.bson.Document;
 import com.mongodb.client.MongoCollection;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,25 +76,65 @@ public class politicalController {
     }
 
     /**
-     *  Obtiene el total de comentarios de mongoDB
+     *  Obtiene el total de comentarios de Lucene
      *
-     *  Realiza conexion a la BD de mongo y obtiene datos,
+     *  Realiza conexion a la ___ y obtiene datos,
      *  obtiene la cantidad de documentos que contienen en su variable la palabra analysis
      */
     @CrossOrigin
-    @RequestMapping(value = "/total", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/total", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getTotal() {
+    public ArrayList<Map> getTotal(@PathVariable("id") Integer id) {
+        Political political = politicalRepository.findById(id);
+        Lucene luca = new Lucene();
+        ArrayList<Integer> aprobacion = new ArrayList<>();
+        aprobacion = luca.getAnalysis(political.getNombre());
+        ArrayList<Map> resultado = new ArrayList<>();
+        Map<String, Object> result = new HashMap<String, Object>(2);
 
-        MongoConnection mongo = MongoConnection.getMongo();
-        mongo.OpenMongoClient();
-        MongoCollection collection = mongo.getCollection();
+        result.put("aprobacion", "Positiva");
+        result.put("numero", aprobacion.get(0));
+        resultado.add(result);
 
-        Long total = collection.countDocuments(Filters.exists("analysis"));
+        Map<String, Object> result2 = new HashMap<String, Object>(2);
+        result2.put("aprobacion", "Negativa");
+        result2.put("numero", aprobacion.get(1));
+        resultado.add(result2);
 
-        Map<String, Object> result = new HashMap<String, Object>(1);
-        result.put("total", total);
-        return result;
+        Map<String, Object> result3 = new HashMap<String, Object>(2);
+        result3.put("aprobacion", "Neutra");
+        result3.put("numero", aprobacion.get(2));
+        resultado.add(result3);
+
+        return resultado;
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/total/general", method = RequestMethod.GET)
+    @ResponseBody
+    public ArrayList<Map> getTotal() {
+
+        Lucene luca = new Lucene();
+        ArrayList<Integer> aprobacion = new ArrayList<>();
+        aprobacion = luca.getAnalysisGeneral();
+        ArrayList<Map> resultado = new ArrayList<>();
+        Map<String, Object> result = new HashMap<String, Object>(2);
+
+        result.put("aprobacion", "Positiva");
+        result.put("numero", aprobacion.get(0));
+        resultado.add(result);
+
+        Map<String, Object> result2 = new HashMap<String, Object>(2);
+        result2.put("aprobacion", "Negativa");
+        result2.put("numero", aprobacion.get(1));
+        resultado.add(result2);
+
+        Map<String, Object> result3 = new HashMap<String, Object>(2);
+        result3.put("aprobacion", "Neutra");
+        result3.put("numero", aprobacion.get(2));
+        resultado.add(result3);
+
+        return resultado;
     }
 
     /**

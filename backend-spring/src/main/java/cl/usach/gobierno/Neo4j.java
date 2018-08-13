@@ -66,9 +66,9 @@ public class Neo4j {
                     session.run(query2);
 
                     String tweetText = lista.get(j).get("text").replaceAll("'", "\"");
-
+                    System.out.println(tweetText);
                     String query = "MATCH (a:Political),(b:Usuario) WHERE a.nombre = '" + recordPolitico.get("a.nombre").asString() + "' AND b.nombre = '" + lista.get(j).get("userScreenName") + "'" +
-                            " MERGE (a)-[r:Tweet {text: '" + tweetText + "'}]->(b)";
+                            " CREATE (a)-[r:Tweet {text: '" + tweetText + "'}]->(b)";
                     session.run(query);
 
                     String followersCount = lista.get(j).get("userFollowersCount");
@@ -89,18 +89,22 @@ public class Neo4j {
     {
         int id = 0;
         ArrayList<String> usuarios = new ArrayList<String>();
-
-        StatementResult nodes = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, u.followersCount as followersCount, a.nombre AS politico ORDER BY r.followerRank DESC LIMIT 80");
-        while(nodes.hasNext())
-        {
-            Record record = nodes.next();
-            if(!usuarios.contains(record.get("usuario").asString())) {
-                listaNodos.add(mapTriple("id", id, "username", record.get("usuario").asString(), "weight", Integer.parseInt(record.get("followersCount").asString())));
-                id++;
-                usuarios.add(record.get("usuario").asString());
+        StatementResult nodesPoliticos = session.run("MATCH (a:Political) return a.nombre as politico");
+        while(nodesPoliticos.hasNext()) {
+            Record record2 = nodesPoliticos.next();
+            StatementResult nodes = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) WHERE a.nombre='" + record2.get("politico").asString() + "' RETURN u.nombre AS usuario, u.followersCount as followersCount, a.nombre AS politico ORDER BY r.followerRank DESC LIMIT 12");
+            while (nodes.hasNext()) {
+                Record record = nodes.next();
+                if (!usuarios.contains(record.get("usuario").asString())) {
+                    listaNodos.add(mapTriple("id", id, "username", record.get("usuario").asString(), "weight", Integer.parseInt(record.get("followersCount").asString())));
+                    id++;
+                    usuarios.add(record.get("usuario").asString());
+                }
             }
+            listaNodos.add(mapTriple("id", id, "username", record2.get("politico").asString(), "weight", 10));
+            id++;
         }
-
+  /*
         nodes = session.run("MATCH (a:Political) return a.nombre as politico");
         while(nodes.hasNext())
         {
@@ -108,13 +112,14 @@ public class Neo4j {
             listaNodos.add(mapTriple("id", id,"username", record.get("politico").asString() ,"weight", 10));
             id++;
         }
+        */
     }
 
     public void GetRelNodos()
     {
         int userIndex = -1;
         int politicalIndex = -1;
-        StatementResult rel = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, a.nombre AS politico ORDER BY u.followerRank DESC LIMIT 80");
+        StatementResult rel = session.run("MATCH (u:Usuario)-[r:Tweet]-(a:Political) RETURN u.nombre AS usuario, a.nombre AS politico ORDER BY u.followerRank DESC LIMIT 2000");
         while(rel.hasNext())
         {
             Record record = rel.next();
