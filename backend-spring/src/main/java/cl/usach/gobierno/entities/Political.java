@@ -1,6 +1,9 @@
 package cl.usach.gobierno.entities;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 
 @Entity
@@ -37,7 +40,14 @@ public class Political implements Serializable {
 
     @Column(name="comentariosNeutros")
     private Double comentariosNeutros;
+    
+    //bi-directional many-to-one association to Usuario
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name="idusuario")
+    private Usuario usuario;
 
+    
     public Integer getId() {
         return id;
     }
@@ -45,6 +55,14 @@ public class Political implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+    
+    public Usuario getUsuario() {
+		return this.usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
 
     public String getNombre(){return nombre;}
 
