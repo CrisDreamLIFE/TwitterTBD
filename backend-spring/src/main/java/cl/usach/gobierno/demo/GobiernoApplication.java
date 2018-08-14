@@ -18,7 +18,6 @@ import java.util.List;
 @ComponentScan({"cl.usach.gobierno", "cl.usach.gobierno.controllers"})
 @EntityScan({"cl.usach.gobierno.entities"})
 @EnableJpaRepositories("cl.usach.gobierno.repositories")
-//@EnableScheduling
 public class GobiernoApplication {
 
 	public static void main(String[] args) throws SQLException {

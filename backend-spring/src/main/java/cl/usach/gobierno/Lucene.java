@@ -48,6 +48,10 @@ public class Lucene {
     private int negativeResultGeneral;
     private int neutralResultGeneral;
 
+
+    /**
+     * Funcion que crea la indexacion de los tweet solo si es que no es un "retweet"
+     */
     public void indexCreate()
     {
         try{
@@ -65,8 +69,6 @@ public class Lucene {
                 DBObject cur = cursor.next();
                 if (cur.get("retweet").toString().equals("false")) {
                     doc = new Document();
-                    System.out.println("-----------------------------");
-                    System.out.println("Guardado\n");
                     doc.add(new StringField("id", cur.get("_id").toString(), Field.Store.YES));
                     doc.add(new TextField("text", cur.get("text").toString(), Field.Store.YES));
                     doc.add(new StringField("analysis", cur.get("analysis").toString(), Field.Store.YES));
@@ -94,6 +96,12 @@ public class Lucene {
         }
     }
 
+    /**
+     * Funcion que busca dado el nombre de un politico los usuarios
+     * que lo mencionaron y tienen mas de 1000 seguidores.
+     *
+     * Los usuarios son agregados a una lista para poder ser iterados en otras funciones.
+     */
     public ArrayList<Document> politicalSearch(String Politicals)
     {
         ArrayList<Document> users = new ArrayList<Document>();
@@ -105,7 +113,7 @@ public class Lucene {
             Query query = parser.parse(Politicals);
             TopDocs result = searcher.search(query,25000);
             ScoreDoc[] hits =result.scoreDocs;
-            for (int i=0; i<hits.length;i++){
+            for (int i = 0; i < hits.length; i++){
                 Document doc = searcher.doc(hits[i].doc);
                 if(Integer.parseInt(doc.get("userFollowersCount")) > 1000){
                     users.add(doc);
@@ -119,25 +127,10 @@ public class Lucene {
         return users;
     }
 
-    public ArrayList<Document> indexSearch(){
-        ArrayList<Document> usuarios = new ArrayList<Document>();
-        try {
-            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("indice/")));
-            for (int i=0; i < reader.numDocs(); i++){
-                Document doc = reader.document(i);
-                if(Integer.parseInt(doc.get("userFollowersCount")) > 1000){
-                    usuarios.add(doc);
-                }
-            }
-            reader.close();
-        }
-        catch(IOException ioe) {
-            System.out.println("Error al leer usuarios");
-        }
-
-        return usuarios;
-    }
-
+    /**
+     * Funcion que obtiene la cantidad de comentarios, positivos, negativos y neutros
+     * dado el nombre de un politico.
+     */
     public ArrayList<Integer> getAnalysis(String Political)
     {
         resultList = null ;
@@ -178,6 +171,10 @@ public class Lucene {
         return resultList;
     }
 
+    /**
+     * Funcion que obtiene la cantidad de comentarios, positivos, negativos y neutros de
+     * todos los tweets.
+     */
     public ArrayList<Integer> getAnalysisGeneral(){
         resultListGeneral = null ;
         positiveResultGeneral = 0;
@@ -220,13 +217,6 @@ public class Lucene {
     }
     public int getneutralResult(){
         return neutralResult;
-    }
-
-    private Map<String, Object> mapDouble(String key1, Object value1, String key2, Object value2) {
-        Map<String, Object> result = new HashMap<String, Object>(2);
-        result.put(key1, value1);
-        result.put(key2, value2);
-        return result;
     }
 
 }

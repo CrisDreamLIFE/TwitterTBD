@@ -29,8 +29,8 @@ public class Neo4j {
         driver.close();
     }
 
-    /*
-       Crea nodos para cada uno de los politicos en la base de datos
+    /**
+     * Crea nodos para cada politico que esta en la BD de mysql
      */
     public void CreateNodePolitical() throws SQLException
     {
@@ -45,11 +45,15 @@ public class Neo4j {
 
         conexion.close();
     }
-    /*
-        Crea relaciones entre usuarios con mas de 1000 seguidores y politicos
-        Busca en Lucene los tweets que contengan la palabra del politico y
-        si ese usuario tiene mas de 1000 seguidores entonces lo agrega a una lista
-        de usuarios que se crea un nodo en neo4j
+    /**
+     * Crea relaciones entre usuarios y politicos
+     *
+     * Busca en Lucene los tweets que contengan el nombre del politico y
+     * si ese usuario tiene mas de 1000 seguidores entonces lo agrega a
+     * una lista de usuarios en el que luego se itera.
+     *
+     * Finalmente crea el nodo usario, crea la relacion y agrega
+     * la cantidad de seguidores a los usuarios
      */
     public void CrearRelacionTweet()
     {
@@ -80,11 +84,21 @@ public class Neo4j {
         }
     }
 
+    /**
+     * Elimina todos los nodos que no tengan alguna relacion
+     */
     public void DeleteNodesWithoutRel(){
         String query = "MATCH (n) WHERE NOT (n)--() DELETE n";
         session.run(query);
     }
 
+    /**
+     * Obtiene los nodos totales y los agrega a un map que contiene el id,
+     * usuario y "peso" que es la cantidad de seguidores.
+     *
+     * Primero itera cada politico, obteniendo todos los usuarios que tienen una relacion con este
+     * y limita la cantidad a 12 usuarios o nodos, ordenados por la cantidad de seguidores.
+     */
     public void GetNodosTotal()
     {
         int id = 0;
@@ -104,17 +118,16 @@ public class Neo4j {
             listaNodos.add(mapTriple("id", id, "username", record2.get("politico").asString(), "weight", 10));
             id++;
         }
-  /*
-        nodes = session.run("MATCH (a:Political) return a.nombre as politico");
-        while(nodes.hasNext())
-        {
-            Record record = nodes.next();
-            listaNodos.add(mapTriple("id", id,"username", record.get("politico").asString() ,"weight", 10));
-            id++;
-        }
-        */
     }
 
+    /**
+     * Obtiene todas las relaciones de los nodos, los cuales tienen el id del nodo fuente
+     * y el id del nodo destino
+     *
+     * Itera la lista de nodos obtenidos por GetNodosTotal() en el cual busca en la lista
+     * el nombre de usuario que coincida con el usuario del "record" si es asi, obtiene el id del nodo
+     * y vuelve a iterar la lista en busca del id del politico.
+     */
     public void GetRelNodos()
     {
         int userIndex = -1;
@@ -173,6 +186,9 @@ public class Neo4j {
         return result;
     }
 
+    /**
+     * Funcion que permite generar un "map" para poder ser enviado al frontend
+     */
     public Map<String, Object> getGrafo()
     {
         GetNodosTotal();

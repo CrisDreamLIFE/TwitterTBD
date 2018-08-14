@@ -13,8 +13,11 @@ public class neo4jController {
 
     private Map<String, Object> grafo3;
 
+    /**
+     * Creacion de los datos del grafo para el front
+     */
     @CrossOrigin
-    @GetMapping(path="/crearrel")
+    @GetMapping(path="/grafo")
     @ResponseBody
     public Map<String, Object> mostrarGrafo(){
         Neo4j grafo2 = new Neo4j();
