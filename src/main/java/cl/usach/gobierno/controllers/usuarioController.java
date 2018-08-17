@@ -1,3 +1,4 @@
+/*
 package cl.usach.gobierno.controllers;
 
 import cl.usach.gobierno.entities.Usuario;
@@ -45,3 +46,4 @@ public class usuarioController {
 	}
 	 
 }
+*/

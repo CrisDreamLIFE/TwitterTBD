@@ -5,9 +5,10 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
-@Table(name = "political")
+@Table(name = "politicos")
 
 public class Political implements Serializable {
 
@@ -16,46 +17,53 @@ public class Political implements Serializable {
     public Political(){}
 
     public Political(Political political){
-        this.id = political.id;
+        this.idpoliticos = political.idpoliticos;
         this.nombre = political.nombre;
-        this.descripcion = political.descripcion;
+        this.cargo = political.cargo;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",unique = true,nullable = false)
-    private int id;
+    @Column(name = "idpoliticos",unique = true,nullable = false)
+    private int idpoliticos;
 
     @Column(name="nombre")
     private String nombre;
 
-    @Column(name="descripcion")
-    private String descripcion;
+    @Column(name="cargo")
+    private String cargo;
 
-    @Column(name="comentariosNegativos")
-    private Double comentariosNegativos;
+    @Column(name="compositivos")
+    private Double compositivos;
 
-    @Column(name="comentariosPositivos")
-    private Double comentariosPositivos;
+    @Column(name="comnegativos")
+    private Double comnegativos;
 
-    @Column(name="comentariosNeutros")
-    private Double comentariosNeutros;
-    
+    @Column(name="comneutros")
+    private Double comneutros;
+
+    @Column(name="fechainicio")
+    private Date fechainicio;
+
+    @Column(name="fechatermino")
+    private Date fechatermino;
+
+    /*
     //bi-directional many-to-one association to Usuario
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name="idusuario")
     private Usuario usuario;
-
+    */
     
     public Integer getId() {
-        return id;
+        return idpoliticos;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.idpoliticos = id;
     }
-    
+  /*
     public Usuario getUsuario() {
 		return this.usuario;
 	}
@@ -63,24 +71,40 @@ public class Political implements Serializable {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-
+*/
     public String getNombre(){return nombre;}
 
     public void setNombre(String nombre){this.nombre = nombre;}
 
-    public String getDescripcion(){return descripcion;}
+    public String getCargo(){return cargo;}
 
-    public void setDescripcion(String descripcion){this.descripcion = descripcion;}
+    public void setCargo(String cargo){this.cargo = cargo;}
 
-    public Double getComentariosNegativos(){return comentariosNegativos;}
+    public Double getComnegativos(){return comnegativos;}
 
-    public void setComentariosNegativos(Double comentariosNegativos){this.comentariosNegativos = comentariosNegativos;}
+    public void setComnegativos(Double comnegativos){this.comnegativos = comnegativos;}
 
-    public Double getComentariosPositivos(){return comentariosPositivos;}
+    public Double getCompositivos(){return compositivos;}
 
-    public void setComentariosPositivos(Double comentariosPositivos){this.comentariosPositivos = comentariosPositivos;}
+    public void setCompositivos(Double compositivos){this.compositivos = compositivos;}
 
-    public Double getComentariosNeutros(){return comentariosNeutros;}
+    public Double getComneutros(){return comneutros;}
 
-    public void setComentariosNeutros(Double comentariosNeutros){this.comentariosNeutros = comentariosNeutros;}
+    public void setComneutros(Double comneutros){this.comneutros = comneutros;}
+
+    public Date getFechainicio(){
+        return this.fechainicio;
+    }
+
+    public void setFechainicio(Date fechainicio){
+        this.fechainicio = fechainicio;
+    }
+
+    public Date getFechatermino(){
+        return this.fechatermino;
+    }
+
+    public void setFechatermino(Date fechatermino){
+        this.fechatermino = fechatermino;
+    }
 }

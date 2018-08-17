@@ -26,12 +26,12 @@ public class Usuario implements Serializable {
     private String password;
 
     private String username;
-
+/*
     //bi-directional many-to-one association to Political
     @OneToMany(mappedBy="usuario")
     @JsonIgnore
     private List<Political> politicals;
-
+    */
     public Usuario() {
     }
 
@@ -82,7 +82,7 @@ public class Usuario implements Serializable {
     public void setUsername(String username) {
         this.username = username;
     }
-
+/*
     public List<Political> getPoliticals() {
         return this.politicals;
     }
@@ -104,5 +104,5 @@ public class Usuario implements Serializable {
 
         return political;
     }
-
+*/
 }

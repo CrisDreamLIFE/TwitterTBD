@@ -6,9 +6,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface PoliticalRepository extends CrudRepository<Political, Long>{
-    @Query(value = "SELECT * FROM political u  where u.id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM politicos u  where u.idpoliticos = :id", nativeQuery = true)
     Political findById(@Param("id") int id);
 
-    @Query(value = "SELECT * FROM political u  where u.nombre = :nombre", nativeQuery = true)
+    @Query(value = "SELECT * FROM politicos u  where u.nombre = :nombre", nativeQuery = true)
     Political findByName(String nombre);
 }
