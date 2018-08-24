@@ -26,6 +26,15 @@ public class Tweet {
     private int positiveScore;
     private int negativeScore;
     private String analysis;
+    private String region;
+    
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
     
     public double getPositivePercent() {
         return positivePorcent;

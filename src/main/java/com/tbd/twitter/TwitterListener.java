@@ -52,7 +52,12 @@ public class TwitterListener {
 					tweet.setNegativePercent(sentimentSpanish.getNegativePercent()); //crear estos
 					tweet.setPositiveScore(sentimentSpanish.getPositiveScore()); //crear estos
 					tweet.setNegativeScore(sentimentSpanish.getNegativeScore()); //crear estos
-					tweet.setAnalysis(sentimentSpanish.getAnalysis()); //crear estos
+					tweet.setAnalysis(sentimentSpanish.getAnalysis());
+					String region = clDetect.getRegion(status.getUser().getLocation());
+					tweet.setRegion(region);
+					System.out.println("##########LoCATION: "+ status.getUser().getLocation());
+					System.out.println("----------REGION: "+ tweet.getRegion());
+					
 					mongo.insert(tweet);
 				}
 	        }

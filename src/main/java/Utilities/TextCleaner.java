@@ -6,7 +6,7 @@ public class TextCleaner {
 
     public static String textCleaner(String input) {
 
-        System.out.println("String original: '" + input + "'");
+        //System.out.println("String original: '" + input + "'");
 
         String cleaned;
         cleaned = Normalizer.normalize(input, Normalizer.Form.NFD);
@@ -19,7 +19,7 @@ public class TextCleaner {
         cleaned = cleaned.replaceAll("  ", " ");
         cleaned = cleaned.replaceAll("[^a-zA-Z0-9\\s]", "");
 
-        System.out.println("String limpiado: '" + cleaned + "'");
+        //System.out.println("String limpiado: '" + cleaned + "'");
         return cleaned;
     }
 }
