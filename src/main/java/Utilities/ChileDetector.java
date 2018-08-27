@@ -1,5 +1,6 @@
 package Utilities;
 
+import javax.xml.soap.Text;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,10 @@ public class ChileDetector {
     }
 
     private List<String> cities = new ArrayList<>();
-    private List<String[]> regions = new ArrayList<String[]>();
+    private List<String> regions = new ArrayList<>();
+
+    private ArrayList<ArrayList<String>> region = new ArrayList<>();
+    private ArrayList<String> provincia;
 
     /**
      * Procedimiento que carga todas las ciudades chilenas a partir de un archivo adjunto "cities.txt".
@@ -56,6 +60,13 @@ public class ChileDetector {
         System.out.println(cities);
     }
 
+    /**
+     * Carga las regiones en una lista de listas
+     * Cada region tiene sus provincias y comunas las cuales son añadidas a la lista
+     * de provincia, luego esa lista  que es una region es añadida a la lista de region.
+     *
+     * La primera palabra de cada lista de region contiene el nombre de la region
+     */
     private void loadRegions() {
     	BufferedReader reader = null;
     	try {
@@ -64,12 +75,15 @@ public class ChileDetector {
     	catch(FileNotFoundException fnfe) {
     		fnfe.printStackTrace();
     	}
+
     	try {
     		String linea = reader.readLine();
-    		while(linea !=null) {
-    			String[] ciudades= null;
-        		ciudades = linea.split(",");
-        		regions.add(ciudades);
+    		while(linea != null){
+                provincia = new ArrayList<>();
+        		for (String ciudades2 : linea.split(",")){
+        		    provincia.add(ciudades2);
+        		}
+        		region.add(provincia);
         		linea = reader.readLine();
     		}
     	}
@@ -77,32 +91,39 @@ public class ChileDetector {
     		ioe.printStackTrace();
     	}
     }
-    
+
+    /**
+     * Recibe el "location" de un usuario y por cada palabra busca en la lista de provincia.
+     * En caso de que se encuentre el lugar en la primera lista de la lista region, significa que
+     * es de la region metropolitana y por lo tanto se debe guardar la comuna, si no es asi se guarda la
+     * region a la que pertenece el tweet.
+     *
+     * En caso que no se detecte ninguna provincia, comuna o region entonces por default se retorna
+     * la ciudad de Santiago.
+     */
     public String getRegion(String input) {
-    	String[] words = null;
     	if(input != null) {
-    		String cleaned = TextCleaner.textCleaner(input);
-    		words = cleaned.split(" ");
-    		for(String word : words) {
+    		String cleaned = TextCleaner.textCleanerLocation(input);
+            for(String word : cleaned.split(",")) {
     			word = word.trim();
-    			for(String[] ciudades : regions) {
-    				for(String ciudad : ciudades) {
-    					String limpio = TextCleaner.textCleaner(ciudad);
-    					String masLimpio = limpio.trim();
-    					if(masLimpio.equals(word)) {
-    						System.out.println("ciudad a comparar: "+masLimpio);
-        					System.out.println("word a comparar: "+word);
-    						System.out.println("pertenece a: "+ciudades[0]);
-    						if(ciudades[0].equals("Metropolitana")) {
-    							return word;
-    						}
-    						return ciudades[0];
-    					}
-    				}
+    			for(int i = 0; i<region.size();i++){
+    			    for(int j = 0; j < region.get(i).size(); j++) {
+                        String regionLimpio = TextCleaner.textCleaner(region.get(i).get(j));
+                        if (word.equals(regionLimpio)) {
+                            System.out.println("-----REGION ENCONTRADA----");
+                            System.out.println("PROVINCIA: " + word + " | REGION: "+region.get(i).get(0));
+                            System.out.println("--------------------------");
+                            if(i == 0){
+                                return region.get(0).get(j);
+                            }else {
+                                return region.get(i).get(0);
+                            }
+                        }
+                    }
     			}
     		}
     	}
-		return "Metropolitana";
+		return "santiago";
     }
     
     public boolean isChilean(String input) {

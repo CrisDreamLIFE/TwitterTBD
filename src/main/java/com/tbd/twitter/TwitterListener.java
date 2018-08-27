@@ -55,9 +55,7 @@ public class TwitterListener {
 					tweet.setAnalysis(sentimentSpanish.getAnalysis());
 					String region = clDetect.getRegion(status.getUser().getLocation());
 					tweet.setRegion(region);
-					System.out.println("##########LoCATION: "+ status.getUser().getLocation());
-					System.out.println("----------REGION: "+ tweet.getRegion());
-					
+					System.out.println("----LOCATION: "+ status.getUser().getLocation()+"----");
 					mongo.insert(tweet);
 				}
 	        }
@@ -111,12 +109,12 @@ public class TwitterListener {
 				bolsa[14] = "Gonzalo Blumel Mac-Iver";
 				bolsa[15] = "Cecilia Pérez";
 				bolsa[16] = "José Ramón Valente Vías";
-				bolsa[17] = "Alfredo Moreno Charme";
+				bolsa[17] = "José Ramón Valente";
 				bolsa[18] = "Alfredo Moreno Charme";
-				bolsa[19] = "María Carolina Schmidt Zaldívar";
+				bolsa[19] = "Carolina Schmidt";
 				bolsa[20] = "Hernán Larraín Fernández";
 				bolsa[21] = "Nicolás Monckeberg Díaz";
-				bolsa[22] = "Juan Andrés Fontaine Talavera"; 
+				bolsa[22] = "Juan Andrés Fontaine";
 				bolsa[23] = "Emilio Santelices Cuevas";
 				bolsa[24] = "Cristian Monckeberg Bruner";
 				bolsa[25] = "Antonio Walker Prieto";
@@ -127,7 +125,7 @@ public class TwitterListener {
 				bolsa[30] = "Marcela Cubillos Sigall";
 				bolsa[31] = "Pauline Kantor Pupkin"; 
 				bolsa[32] = "Isabel Plá Jarufe";
-				bolsa[33] = "Mauricio José Rojas Mullor";
+				bolsa[33] = "Consuelo Valdés Chadwick";
 				
 				
 	    FilterQuery filter = new FilterQuery();
