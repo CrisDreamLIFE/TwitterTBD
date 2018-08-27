@@ -10,10 +10,10 @@ public class Tweet {
 
     private long _id;
     private Date createdAt;
-    private GeoLocation geoLocation;
+    //private GeoLocation geoLocation;
 	private String text;
-    private int retweetCount;
-    private int favoriteCount;
+    //private int retweetCount;
+    //private int favoriteCount;
     private boolean retweet;
     private long userId;
     private String userScreenName;
@@ -21,10 +21,10 @@ public class Tweet {
     private int userFollowersCount;
     private int userStatusesCount;
     private int userFriendsCount;
-    private double positivePorcent;
-    private double negativePorcent;
-    private int positiveScore;
-    private int negativeScore;
+    //private double positivePorcent;
+    //private double negativePorcent;
+    //private int positiveScore;
+    //private int negativeScore;
     private String analysis;
     private String region;
     
@@ -35,7 +35,7 @@ public class Tweet {
     public void setRegion(String region) {
         this.region = region;
     }
-    
+    /*
     public double getPositivePercent() {
         return positivePorcent;
     }
@@ -66,7 +66,7 @@ public class Tweet {
     public void setNegativeScore(int negativeScore) {
         this.negativeScore = negativeScore;
     }
-    
+    */
     public String getAnalysis() {
         return analysis;
     }
@@ -90,7 +90,7 @@ public class Tweet {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
-
+/*
     public GeoLocation getGeoLocation() {
         return geoLocation;
     }
@@ -98,7 +98,7 @@ public class Tweet {
     public void setGeoLocation(GeoLocation geoLocation) {
         this.geoLocation = geoLocation;
     }
-
+*/
     public String getText() {
         return text;
     }
@@ -106,7 +106,7 @@ public class Tweet {
     public void setText(String text) {
         this.text = text;
     }
-
+/*
     public int getRetweetCount() {
         return retweetCount;
     }
@@ -122,7 +122,7 @@ public class Tweet {
     public void setFavoriteCount(int favoriteCount) {
         this.favoriteCount = favoriteCount;
     }
-
+*/
     public boolean isRetweet() {
         return retweet;
     }
