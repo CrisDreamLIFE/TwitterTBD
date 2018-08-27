@@ -32,14 +32,12 @@ public class TwitterListener {
 		twitterStream.addListener(new StatusListener() {
 			public void onStatus(Status status) {
 				ChileDetector clDetect = ChileDetector.getInstance();
-				if (clDetect.isChilean(status.getUser().getLocation())) {
+				String region = clDetect.getRegion(status.getUser().getLocation());
+				if (!region.equals("null")) {
 					Tweet tweet = new Tweet();
 					tweet.set_id(status.getId());
 					tweet.setCreatedAt(status.getCreatedAt());
-					tweet.setGeoLocation(status.getGeoLocation());
 					tweet.setText(status.getText());
-					tweet.setRetweetCount(status.getRetweetCount());
-					tweet.setFavoriteCount(status.getFavoriteCount());
 					tweet.setRetweet(status.isRetweet());
 					tweet.setUserId(status.getUser().getId());
 					tweet.setUserScreenName(status.getUser().getScreenName());
@@ -48,14 +46,8 @@ public class TwitterListener {
 					tweet.setUserStatusesCount(status.getUser().getStatusesCount());
 					tweet.setUserFriendsCount(status.getUser().getFriendsCount());
 					sentimentSpanish.analyze(status.getText());
-					tweet.setPositivePercent(sentimentSpanish.getPositivePercent()); //crear estos
-					tweet.setNegativePercent(sentimentSpanish.getNegativePercent()); //crear estos
-					tweet.setPositiveScore(sentimentSpanish.getPositiveScore()); //crear estos
-					tweet.setNegativeScore(sentimentSpanish.getNegativeScore()); //crear estos
 					tweet.setAnalysis(sentimentSpanish.getAnalysis());
-					String region = clDetect.getRegion(status.getUser().getLocation());
 					tweet.setRegion(region);
-					System.out.println("----LOCATION: "+ status.getUser().getLocation()+"----");
 					mongo.insert(tweet);
 				}
 	        }

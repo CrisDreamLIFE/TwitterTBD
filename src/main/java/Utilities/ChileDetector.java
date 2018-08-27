@@ -10,7 +10,7 @@ public class ChileDetector {
     private static ChileDetector instance = null;
 
     private ChileDetector() {
-        loadCities();
+        //loadCities();
         loadRegions();
     }
 
@@ -102,30 +102,50 @@ public class ChileDetector {
      * la ciudad de Santiago.
      */
     public String getRegion(String input) {
-    	if(input != null) {
+    	boolean esChileno = false;
+        if(input != null) {
     		String cleaned = TextCleaner.textCleanerLocation(input);
-            for(String word : cleaned.split(",")) {
+    		for(String word : cleaned.split(",")) {
     			word = word.trim();
-    			for(int i = 0; i<region.size();i++){
-    			    for(int j = 0; j < region.get(i).size(); j++) {
-                        String regionLimpio = TextCleaner.textCleaner(region.get(i).get(j));
-                        if (word.equals(regionLimpio)) {
-                            System.out.println("-----REGION ENCONTRADA----");
-                            System.out.println("PROVINCIA: " + word + " | REGION: "+region.get(i).get(0));
-                            System.out.println("--------------------------");
-                            if(i == 0){
-                                return region.get(0).get(j);
-                            }else {
-                                return region.get(i).get(0);
-                            }
+    			for (int i = 0; i < region.size(); i++) {
+    			    for (int j = 0; j < region.get(i).size(); j++) {
+    			        /******/
+    			        if(word.contains("chile") || region.get(i).get(j).contains(word)){
+    			            esChileno = true;
                         }
-                    }
-    			}
+                        /*****/
+    			        String regionLimpio = TextCleaner.textCleaner(region.get(i).get(j));
+    			        if (word.contains(regionLimpio)) {
+                            System.out.println("--------------------------");
+    			            System.out.println("-----REGION ENCONTRADA----");
+    			            System.out.println("PROVINCIA: " + word + " | REGION: " + region.get(i).get(0));
+    			            System.out.println("--------------------------");
+    			            if (i == 0) {
+    			                if(j == 0) {
+                                    return "Santiago";
+                                }else{
+                                    return region.get(0).get(j);
+                                }
+    			            } else {
+    			                return region.get(i).get(0);
+    			            }
+    			        }
+    			    }
+                }
     		}
-    	}
-		return "santiago";
+    		if(esChileno) {
+                System.out.println("--------------------");
+                System.out.println("REGION NO ENCONTRADA");
+                System.out.println("--------------------");
+                return "Santiago";
+            }
+        }
+        System.out.println("--------------------");
+        System.out.println("NO ES CHILENO: " + input);
+        System.out.println("--------------------");
+		return "null";
     }
-    
+    /*
     public boolean isChilean(String input) {
         String[] words = null;
 
@@ -143,4 +163,5 @@ public class ChileDetector {
         }
         return false;
     }
+    */
 }
