@@ -9,6 +9,7 @@ import com.mongodb.client.model.Filters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import cl.usach.gobierno.MongoConnection;
 import org.bson.Document;
@@ -38,6 +39,20 @@ public class politicalController {
         // This returns a JSON or XML with the users
         return politicalRepository.findAll();
     }
+
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<Political> createPolitical(@RequestBody Political resource) {
+
+        if (resource.getNombre().equals("") || resource.getCargo().equals("")){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }else{
+            return new ResponseEntity<>(politicalRepository.save(resource), HttpStatus.CREATED);
+        }
+    }
+    
 
     /**
      * Obtiene la informacion de un politico dado su id
