@@ -71,6 +71,7 @@ public class Lucene {
                     doc = new Document();
                     doc.add(new StringField("id", cur.get("_id").toString(), Field.Store.YES));
                     doc.add(new TextField("text", cur.get("text").toString(), Field.Store.YES));
+                    doc.add(new StringField("region", cur.get("region").toString(), Field.Store.YES));
                     doc.add(new StringField("analysis", cur.get("analysis").toString(), Field.Store.YES));
                     //doc.add(new StringField("finalCountry",cur.get("finalCountry").toString(),Field.Store.YES));
                     doc.add(new StringField("userScreenName", cur.get("userScreenName").toString(), Field.Store.YES));
@@ -125,6 +126,41 @@ public class Lucene {
             Logger.getLogger(Lucene.class.getName()).log(Level.SEVERE,null,ex);
         }
         return users;
+    }
+    
+    public ArrayList<Integer> RegionSearch(String region)
+    {
+    	ArrayList<Integer> resultado = null ;
+        int poblacion = 0;
+        int total = 0;
+        try{
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get("indice/")));
+            IndexSearcher searcher = new IndexSearcher(reader);
+            Analyzer analyzer = new StandardAnalyzer();
+            resultado = new ArrayList<>();
+            QueryParser parser = new QueryParser("text",analyzer);
+            Query query = parser.parse(region);
+            TopDocs result = searcher.search(query,25000);
+            ScoreDoc[] hits =result.scoreDocs;
+
+            for (int i=0; i < hits.length; i++) {
+                Document doc = searcher.doc(hits[i].doc);
+                if((doc.get("analysis")).equals("Positive")) {
+                    poblacion++;
+                	total++;
+                }
+            }
+            reader.close();
+        }
+        catch(IOException | ParseException ex)
+        {
+            Logger.getLogger(Lucene.class.getName()).log(Level.SEVERE,null,ex);
+
+        }
+        resultado.add(poblacion);
+        resultado.add(poblacion*100/total);
+
+        return resultado;
     }
 
     /**
