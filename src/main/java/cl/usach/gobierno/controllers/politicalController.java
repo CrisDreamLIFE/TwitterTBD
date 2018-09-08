@@ -15,6 +15,7 @@ import cl.usach.gobierno.MongoConnection;
 import org.bson.Document;
 import com.mongodb.client.MongoCollection;
 
+import javax.persistence.PreUpdate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -140,6 +141,22 @@ public class politicalController {
         resultado.add(result3);
 
         return resultado;
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/updateTotal", method = RequestMethod.GET)
+    public HttpStatus updateTotal(){
+        Lucene luca = new Lucene();
+        ArrayList<Integer> aprobacion = new ArrayList<>();
+        for (int i = 1; i < 25;i++){
+            Political political2 = politicalRepository.findById(i);
+            aprobacion = luca.getAnalysis(political2.getNombre());
+            political2.setCompositivos(aprobacion.get(0));
+            political2.setComnegativos(aprobacion.get(1));
+            political2.setComneutros(aprobacion.get(2));
+            politicalRepository.save(political2);
+        }
+        return HttpStatus.OK;
     }
 
     /**

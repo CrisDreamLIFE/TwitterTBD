@@ -3,9 +3,11 @@ package cl.usach.gobierno.entities;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.ManyToAny;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "politicos")
@@ -34,13 +36,13 @@ public class Political implements Serializable {
     private String cargo;
 
     @Column(name="compositivos")
-    private Double compositivos;
+    private int compositivos;
 
     @Column(name="comnegativos")
-    private Double comnegativos;
+    private int comnegativos;
 
     @Column(name="comneutros")
-    private Double comneutros;
+    private int comneutros;
 
     @Column(name="fechainicio")
     private Date fechainicio;
@@ -48,14 +50,13 @@ public class Political implements Serializable {
     @Column(name="fechatermino")
     private Date fechatermino;
 
-    /*
+
     //bi-directional many-to-one association to Usuario
-    @ManyToOne
+    @OneToMany(mappedBy="political")
     @JsonIgnore
-    @JoinColumn(name="idusuario")
-    private Usuario usuario;
-    */
-    
+    private List<Region> region;
+
+
     public Integer getId() {
         return idpoliticos;
     }
@@ -80,17 +81,17 @@ public class Political implements Serializable {
 
     public void setCargo(String cargo){this.cargo = cargo;}
 
-    public Double getComnegativos(){return comnegativos;}
+    public int getComnegativos(){return comnegativos;}
 
-    public void setComnegativos(Double comnegativos){this.comnegativos = comnegativos;}
+    public void setComnegativos(int comnegativos){this.comnegativos = comnegativos;}
 
-    public Double getCompositivos(){return compositivos;}
+    public int getCompositivos(){return compositivos;}
 
-    public void setCompositivos(Double compositivos){this.compositivos = compositivos;}
+    public void setCompositivos(int compositivos){this.compositivos = compositivos;}
 
-    public Double getComneutros(){return comneutros;}
+    public int getComneutros(){return comneutros;}
 
-    public void setComneutros(Double comneutros){this.comneutros = comneutros;}
+    public void setComneutros(int comneutros){this.comneutros = comneutros;}
 
     public Date getFechainicio(){
         return this.fechainicio;
@@ -106,5 +107,13 @@ public class Political implements Serializable {
 
     public void setFechatermino(Date fechatermino){
         this.fechatermino = fechatermino;
+    }
+
+    public List<Region> getRegion(){
+        return region;
+    }
+
+    public void setRegion(List<Region> region){
+        this.region = region;
     }
 }

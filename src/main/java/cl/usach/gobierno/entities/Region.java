@@ -1,51 +1,94 @@
 package cl.usach.gobierno.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-public class Region {
+@Entity
+@Table(name = "region")
 
-	@Entity
-	@Table(name = "region")
+public class Region implements Serializable {
 
-	public class Political implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	    private static final long serialVersionUID = 1L;
+	public Region(){};
 
-
-	    @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    @Column(name = "id_region",unique = true,nullable = false)
-	    private int id_region;
-
-	    @Column(name="poblacion")
-	    private int poblacion;
-
-	    @Column(name="porcentajeAprobacion")
-	    private int porcentajeAprobacion;
-
-	    
-	    public Integer getId() {
-	        return id_region;
-	    }
-
-	    public void setId(Integer id) {
-	        this.id_region = id;
-	    }
-	    
-	    public int getPoblacion(){return poblacion;}
-
-	    public void setPoblacion(int poblacion){this.poblacion = poblacion;}
-
-	    public int getPorcentajeAprovacion(){return porcentajeAprobacion;}
-
-	    public void setPorcentajeAprobacion(int porcentaje){this.porcentajeAprobacion = porcentaje;}
+	public Region(Region region){
+		this.idregion = region.idregion;
+		this.nombre = region.nombre;
 	}
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "idregion",nullable = false)
+	private int idregion;
+
+	@Column(name="nombre")
+	private String nombre;
+
+	@Column(name="compositivos")
+	private int compositivos;
+
+	@Column(name="comnegativos")
+	private int comnegativos;
+
+	@Column(name="comneutros")
+	private int comneutros;
+
+	@ManyToOne
+	@JsonIgnore
+	@JoinColumn(name = "idpoliticos")
+	private Political political;
+
+
+	public int getId() {
+		return idregion;
+	}
+
+	public void setId(int id) {
+		this.idregion = id;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public int getCompositivos(){
+		return compositivos;
+	}
+
+	public void setCompositivos(int compositivos){
+		this.compositivos = compositivos;
+	}
+	public int getComnegativos(){
+		return comnegativos;
+	}
+
+	public void setComnegativos(int comnegativos){
+		this.comnegativos = comnegativos;
+	}
+
+	public int getComneutros(){
+		return comneutros;
+	}
+
+	public void setComneutros(int comneutros){
+		this.comnegativos = comneutros;
+	}
+
+	public Political getPolitical(){
+		return political;
+	}
+
+	public void setPolitical(Political political){
+		this.political = political;
+	}
+
 }
