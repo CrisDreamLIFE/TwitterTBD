@@ -73,47 +73,40 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `gobierno`.`region`
+-- Table `gobierno`.`localidad`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `gobierno`.`region` ;
+DROP TABLE IF EXISTS `gobierno`.`localidad` ;
 
-CREATE TABLE IF NOT EXISTS `gobierno`.`region` (
-  `idregion` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `gobierno`.`localidad` (
+  `idlocalidad` INT NOT NULL,
   `nombre` VARCHAR(255) NULL,
-  `compositivos` INT NULL,
-  `comnegativos` INT NULL,
-  `comneutros` INT NULL,
-  `idpoliticos` INT NULL,
-  PRIMARY KEY (`idregion`),
-  INDEX `fk_region_1_idx` (`idpoliticos` ASC),
-  CONSTRAINT `fk_region_1`
-    FOREIGN KEY (`idpoliticos`)
-    REFERENCES `gobierno`.`politicos` (`idpoliticos`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  `isregion` BOOLEAN DEFAULT false,
+  PRIMARY KEY (`idlocalidad`))
 ENGINE = InnoDB;
 
+DROP TABLE IF EXISTS `gobierno`.`politico_localidad` ;
 
--- -----------------------------------------------------
--- Table `gobierno`.`comuna`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `gobierno`.`comuna` ;
-
-CREATE TABLE IF NOT EXISTS `gobierno`.`comuna` (
-  `idcomuna` INT NOT NULL,
-  `nombre` VARCHAR(255) NULL,
-  `compositivos` INT NULL,
-  `comnegativos` INT NULL,
-  `comneutros` INT NULL,
-  `idpoliticos` INT NULL,
-  PRIMARY KEY (`idcomuna`),
-  INDEX `fk_comuna_1_idx` (`idpoliticos` ASC),
-  CONSTRAINT `fk_comuna_1`
-    FOREIGN KEY (`idpoliticos`)
-    REFERENCES `gobierno`.`politicos` (`idpoliticos`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+CREATE TABLE IF NOT EXISTS `gobierno`.`politico_localidad`(
+	`idpoliticos` INT NOT NULL,
+    `idlocalidad` INT NOT NULL,
+    `compositivos` INT NULL,
+	`comnegativos` INT NULL,
+	`comneutros` INT NULL,
+    PRIMARY KEY (`idpoliticos`, `idlocalidad`),
+	INDEX `fk_politico_localidad_politicos1_idx` (`idpoliticos` ASC),
+	INDEX `fk_politico_localidad_localidad1_idx` (`idlocalidad` ASC),
+    CONSTRAINT `fk_politico_localidad_politicos1`
+      FOREIGN KEY (`idpoliticos`)
+      REFERENCES `gobierno`.`politicos` (`idpoliticos`)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+	CONSTRAINT `fk_politico_localidad_localidad1`
+	  FOREIGN KEY (`idlocalidad`)
+	  REFERENCES `gobierno`.`localidad` (`idlocalidad`)
+	  ON DELETE NO ACTION
+	  ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+    
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
@@ -150,74 +143,74 @@ INSERT INTO `gobierno`.`politicos` (`idpoliticos`, `nombre`, `cargo`, `fechainic
 INSERT INTO `gobierno`.`politicos` (`idpoliticos`, `nombre`, `cargo`, `fechainicio`, `fechatermino`, `compositivos`, `comnegativos`, `comneutros`) VALUES (23, 'Isabel Plá Jarufe', 'Ministerio de la Mujer y la Equidad de Género', '2018-04-11', NULL, 0, 0, 0);
 INSERT INTO `gobierno`.`politicos` (`idpoliticos`, `nombre`, `cargo`, `fechainicio`, `fechatermino`, `compositivos`, `comnegativos`, `comneutros`) VALUES (24, 'Consuelo Valdés Chadwick', 'Ministerio de Culturas, las Artes y el Patrimonio', '2018-08-13', NULL, 0, 0, 0);
 
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (1, 'Metropolitana', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (2, 'Arica y Parinacota', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (3, 'Tarapacá', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (4, 'Antofagasta', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (5, 'Atacama', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (6, 'Coquimbo', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (7, 'Valparaíso', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (8, "Libertador General Bernardo O'Higgins", 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (9, 'Maule', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (10, 'BioBío', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (11, 'La Araucanía', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (12, 'Los Ríos', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (13, 'Los Lagos', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (14, 'Aysén del General Carlos Ibañez del Campo', 0, 0, 0);
-INSERT INTO `gobierno`.`region` (`idregion`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (15, 'Magallanes', 0, 0, 0);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Metropolitana', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Arica y Parinacota', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Tarapacá', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Antofagasta', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Atacama', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Coquimbo', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Valparaíso', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ("Libertador General Bernardo O'Higgins", TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Maule', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('BioBío', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('La Araucanía', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Los Ríos', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Los Lagos', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Aysén del General Carlos Ibañez del Campo', TRUE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Magallanes', TRUE);
 
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (1, 'Santiago', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (2, 'Cerrillos', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (3, 'Cerro Navia', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (4, 'Conchalí', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (5, 'El Bosque', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (6, 'Estación Central', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (7, 'Huechuraba', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (8, "Independencia", 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (9, 'La Cisterna', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (10, 'La Florida', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (11, 'La Granja', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (12, 'La Pintana', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (13, 'La Reina', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (14, 'Las Condes', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (15, 'Lo Barnechea', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (16, 'Lo Espejo', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (17, 'Lo Prado', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (18, 'Macul', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (19, 'Maipú', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (20, 'Ñuñoa', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (21, 'Pedro Aguirre Cerda', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (22, 'Peñalolén', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (23, 'Providencia', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (24, 'Pudahuel', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (25, 'Quilicura', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (26, 'Quinta Normal', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (27, 'Recoleta', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (28, 'Renca', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (29, 'San Joaquín', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (30, 'San Miguel', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (31, 'San Ramón', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (32, 'Vitacura', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (33, 'Colina', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (34, 'Lampa', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (35, 'Til Til', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (36, 'Puente Alto', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (37, 'Pirque', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (38, 'San José de Maipo', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (39, 'Buin', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (40, 'Calera de Tango', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (41, 'Buin', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (42, 'Calera de Tango', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (43, 'Paine', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (44, 'Melipilla', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (45, 'Alhué', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (46, 'Curacaví', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (47, 'María Pinto', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (48, 'San Pedro', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (49, 'Talagante', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (50, 'El Monte', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (51, 'Isla de Maipo', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (52, 'Padre Hurtado', 0, 0, 0);
-INSERT INTO `gobierno`.`comuna` (`idcomuna`, `nombre`, `compositivos`, `comnegativos`, `comneutros`) VALUES (53, 'Peñaflor', 0, 0, 0);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Santiago', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Cerrillos', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Cerro Navia', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Conchalí', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('El Bosque', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Estación Central', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Huechuraba', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ("Independencia", FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('La Cisterna', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('La Florida', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('La Granja', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('La Pintana', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('La Reina', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Las Condes', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Lo Barnechea', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Lo Espejo', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Lo Prado', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Macul', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Maipú', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Ñuñoa', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Pedro Aguirre Cerda', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Peñalolén', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Providencia', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Pudahuel', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Quilicura', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Quinta Normal', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Recoleta', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Renca', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('San Joaquín', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('San Miguel', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('San Ramón', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Vitacura', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Colina', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Lampa', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Til Til', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Puente Alto', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Pirque', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('San José de Maipo', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Buin', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Calera de Tango', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Buin', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Calera de Tango', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Paine', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Melipilla', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Alhué', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Curacaví', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('María Pinto', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('San Pedro', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Talagante', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('El Monte', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Isla de Maipo', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Padre Hurtado', FALSE);
+INSERT INTO `gobierno`.`localidad` (`nombre`, `isRegion`) VALUES ('Peñaflor', FALSE);
 
 COMMIT;
