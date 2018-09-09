@@ -78,7 +78,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `gobierno`.`localidad` ;
 
 CREATE TABLE IF NOT EXISTS `gobierno`.`localidad` (
-  `idlocalidad` INT NOT NULL,
+  `idlocalidad` INT NOT NULL auto_increment,
   `nombre` VARCHAR(255) NULL,
   `isregion` BOOLEAN DEFAULT false,
   PRIMARY KEY (`idlocalidad`))
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `gobierno`.`politico_localidad`(
 	  ON DELETE NO ACTION
 	  ON UPDATE NO ACTION)
 ENGINE = InnoDB;
-    
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
