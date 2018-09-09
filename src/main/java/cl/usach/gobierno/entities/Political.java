@@ -6,8 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.ManyToAny;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "politicos")
@@ -51,10 +50,10 @@ public class Political implements Serializable {
     private Date fechatermino;
 
 
-    //bi-directional many-to-one association to Usuario
-    @OneToMany(mappedBy="political")
+    //bi-directional many-to-many association to Localidad
+    @OneToMany(mappedBy="political", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Region> region;
+    private List<PoliticoLocalidad> localidades = new ArrayList<>();
 
 
     public Integer getId() {
@@ -109,11 +108,48 @@ public class Political implements Serializable {
         this.fechatermino = fechatermino;
     }
 
-    public List<Region> getRegion(){
-        return region;
+    public List<PoliticoLocalidad> getLocalidades(){
+        return localidades;
     }
 
-    public void setRegion(List<Region> region){
-        this.region = region;
+    public void setLocalidades(List<PoliticoLocalidad> localidades){
+        this.localidades = localidades;
+    }
+
+    public void addLocalidad(Localidad localidad) {
+        PoliticoLocalidad politicalLocalidad = new PoliticoLocalidad(this, localidad);
+        localidades.add(politicalLocalidad);
+        localidad.getPoliticals().add(politicalLocalidad);
+    }
+
+    public void removeLocalidad(Localidad localidad) {
+        for (Iterator<PoliticoLocalidad> iterator = localidades.iterator();
+             iterator.hasNext(); ) {
+            PoliticoLocalidad politicalLocalidad = iterator.next();
+
+            if (politicalLocalidad.getPolitical().equals(this) &&
+                    politicalLocalidad.getLocalidad().equals(localidad)) {
+                iterator.remove();
+                politicalLocalidad.getLocalidad().getPoliticals().remove(politicalLocalidad);
+                politicalLocalidad.setPolitical(null);
+                politicalLocalidad.setLocalidad(null);
+            }
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Political political = (Political) o;
+        return Objects.equals(nombre, political.nombre);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre);
     }
 }
